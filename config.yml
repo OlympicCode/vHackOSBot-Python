@@ -1,4 +1,4 @@
 username:  # <- Your Username Account
 password:  # <- Tour Password Account
 
-debug: false
+debug: false # <- debug mode dev online
