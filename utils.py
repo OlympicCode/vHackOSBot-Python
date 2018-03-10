@@ -22,14 +22,6 @@ except ImportError:
 
 #logger = logging.getLogger(__name__)
 
-# open configuration
-with open("config.yml", 'r') as stream:
-    try:
-        Configuration = yaml.load(stream, Loader=yaml.RoundTripLoader)
-    except yaml.YAMLError as exc:
-        print("{} [{}]".format("Error in your config.yml please check in", exc))
-
-
 def set_default(obj):
     if isinstance(obj, set):
         return list(obj)
@@ -100,10 +92,10 @@ class Utils:
     def __init__(self):
         self.secret = "aeffI"
         self.url = "https://api.vhack.cc/mobile/6/"
-        Configuration = self.readConfiguration()
+        self.Configuration = self.readConfiguration()
         try:
-            self.username = Configuration["username"]
-            self.password = Configuration["password"]
+            self.username = self.Configuration["username"]
+            self.password = self.Configuration["password"]
         except KeyError as e:
             print("Error Configuration {}".format(e))
             exit(0)
@@ -112,11 +104,11 @@ class Utils:
           exit(0)
         self.user_agent = self.generateUA(self.username + self.password)
         try:
-            self.accessToken = Configuration["accessToken"]
+            self.accessToken = self.Configuration["accessToken"]
         except:
             self.accessToken = None
         try:
-            self.uID = Configuration["uID"]
+            self.uID = self.Configuration["uID"]
         except KeyError: 
             self.uID = None
         self.login = "0"
@@ -135,26 +127,26 @@ class Utils:
 
     def generateConfiguration(self, uID, accessToken, **kwargs):
         # append uID/accessToken in configuration file.
-        Configuration['username'] = self.username
-        Configuration['password'] = self.password
+        self.Configuration['username'] = self.username
+        self.Configuration['password'] = self.password
 
         try:
-            Configuration['uID'] = uID
+            self.Configuration['uID'] = uID
         except KeyError:
-            Configuration['uID'] = self.uID
+            self.Configuration['uID'] = self.uID
 
         try:
-            Configuration['accessToken'] = accessToken
+            self.Configuration['accessToken'] = accessToken
         except KeyError:
-            Configuration['accessToken'] = self.accessToken
+            self.Configuration['accessToken'] = self.accessToken
 
-        Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
-        Configuration.yaml_add_eol_comment("# <- Tour Password Account\n\n", 'password', column=5)
-        Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
-        Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
+        self.Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
+        self.Configuration.yaml_add_eol_comment("# <- Tour Password Account\n\n", 'password', column=5)
+        self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
+        self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
         
         with io.open('config.yml', 'w') as outfile:
-            yaml.dump(Configuration, stream=outfile, default_flow_style=False, 
+            yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
                       Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
 
     def generateUA(self, identifier):
