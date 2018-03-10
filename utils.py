@@ -94,8 +94,8 @@ class Utils:
         self.url = "https://api.vhack.cc/mobile/6/"
         self.Configuration = self.readConfiguration()
         try:
-            self.username = self.Configuration["username"]
-            self.password = self.Configuration["password"]
+            self.username = str(self.Configuration["username"])
+            self.password = str(self.Configuration["password"])
         except KeyError as e:
             print("Error Configuration {}".format(e))
             exit(0)
@@ -103,7 +103,12 @@ class Utils:
           print("please Change Username/Password to config.yml")
           exit(0)
         self.user_agent = self.generateUA(self.username + self.password)
-        self.generateConfiguration(uID="", accessToken="")
+    
+        try:
+            self.generateConfiguration(uID="", accessToken="")
+        except TypeError:
+            self.generateConfiguration()
+
         try:
             self.accessToken = self.Configuration["accessToken"]
         except:
@@ -116,7 +121,7 @@ class Utils:
 
     def readConfiguration(self):
       # open configuration
-      with open("config.yml", 'r') as stream:
+      with open("config.yml", 'rb') as stream:
           try:
               Configuration = yaml.load(stream, Loader=yaml.RoundTripLoader)
           except yaml.YAMLError as exc:
@@ -144,8 +149,19 @@ class Utils:
         if not self.Configuration['accessToken'] and not self.Configuration['uID']:
             request = requests.Session()
             request.headers.update({'User-agent': self.user_agent})
-            url_login = self.Login('login.php', self.username, self.password)
-            result = request.get(url_login)
+            url = 'login.php'
+            url_login = self.Login(url, self.username, self.password)
+
+            try:
+                result = request.get(url_login, timeout=3, verify=False)
+            except requests.exceptions.ConnectTimeout:
+                print("Request Timeout... TimeOut connection '{}'".format(url))
+                exit(0)
+
+            except requests.exceptions.ConnectionError:
+                print("Request Timeout... Connection Error '{}' with code: [{}]".format(url, url_login.status_code))
+                exit(0)
+
             result.encoding = 'UTF-8'
             parseJson = result.json()
 
@@ -161,7 +177,7 @@ class Utils:
             self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
             
-            with io.open('config.yml', 'w') as outfile:
+            with io.open('config.yml', 'wb') as outfile:
                 yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
                           Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
              
@@ -256,11 +272,21 @@ class Utils:
             if i > 10:
                 exit(0)
             if self.uID is None or self.accessToken is None or self.login is "0":
+                print("test")
                 # connect login.
                 request = requests.Session()
                 request.headers.update({'User-agent': self.user_agent})
                 url_login = self.Login('login.php', self.username, self.password)
-                result = request.get(url_login)
+                try:
+                    result = request.get(url_login, timeout=3, verify=False)
+                except requests.exceptions.ConnectTimeout:
+                    print("Request Timeout... TimeOut connection {}".format(php))
+                    exit(0)
+
+                except requests.exceptions.ConnectionError:
+                    print("Request Timeout... Connection Error '{}' with code: [{}]".format('login.php', url_login.status_code))
+                    exit(0)
+
                 result.encoding = 'UTF-8'
                 parseJson = result.json()
 
@@ -275,7 +301,16 @@ class Utils:
                 self.generateConfiguration(self.uID, self.accessToken)
                 
                 # Create First request.
-                result = request.get(self.generateURL(self.uID, php, **kwargs))
+                try:
+                    result = request.get(self.generateURL(self.uID, php, **kwargs), timeout=3)
+                except requests.exceptions.ConnectTimeout:
+                    print("Request Timeout... TimeOut connection {}".format(php))
+                    exit(0)
+
+                except requests.exceptions.ConnectionError:
+                    print("Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
+                    exit(0)
+
                 return result.text
 
             else:
@@ -283,7 +318,17 @@ class Utils:
                 request.headers.update({'User-agent': self.user_agent})
                 
                 # return just request don't login before.
-                result = request.get(self.generateURL(self.uID, php, **kwargs))
+                try:
+                    result = request.get(self.generateURL(self.uID, php, **kwargs), timeout=3)
+                except requests.exceptions.ConnectTimeout:
+                    print("Request Timeout... TimeOut connection {}".format(php))
+                    exit(0)
+
+                except requests.exceptions.ConnectionError:
+                    print("Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
+                    exit(0)
+
+
                 result.encoding = 'UTF-8'
                 parseJson = result.json()
                 try:
