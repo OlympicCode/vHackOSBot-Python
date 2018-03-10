@@ -1,9 +1,10 @@
 from network import Network
+from utils import Utils
 
 
 class run():
-    network = Network()
-    print(network.getList())
+    ut = Utils()
+    network = Network(ut)
 
 if __name__ == '__main__':
     main = run()

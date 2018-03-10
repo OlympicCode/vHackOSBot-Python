@@ -12,7 +12,7 @@ import ruamel.yaml as yaml
 from ruamel.yaml.scalarstring import SingleQuotedScalarString, DoubleQuotedScalarString
 import sys
 import io
-import logging
+import logging, coloredlogs
 import datetime
 try:
     import http.client as http_client
@@ -238,6 +238,8 @@ class Utils:
         self.user_agent = self.generateUA("testtest")
         try:
             if kwargs["debug"] is True:
+                coloredlogs.install(level='DEBUG')
+                coloredlogs.install(level='DEBUG', logger=logger)
                 http_client.HTTPConnection.debuglevel = 1
                 # You must initialize logging, otherwise you'll not see debug output.
                 logging.basicConfig()

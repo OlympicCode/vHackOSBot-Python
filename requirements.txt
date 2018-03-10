@@ -1,2 +1,3 @@
 requests==2.14.2
 ruamel.yaml==0.15.35
+coloredlogs==9.0
