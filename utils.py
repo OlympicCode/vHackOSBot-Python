@@ -12,6 +12,13 @@ import ruamel.yaml as yaml
 from ruamel.yaml.scalarstring import SingleQuotedScalarString, DoubleQuotedScalarString
 import sys
 import io
+import logging
+try:
+    import http.client as http_client
+except ImportError:
+    # Python 2
+    import httplib as http_client
+
 #logger = logging.getLogger(__name__)
 
 # open configuration
@@ -92,8 +99,13 @@ class Utils:
     def __init__(self):
         self.secret = "aeffI"
         self.url = "https://api.vhack.cc/mobile/6/"
-        self.username = Configuration["username"]
-        self.password = Configuration["password"]
+        Configuration = self.readConfiguration()
+        try:
+            self.username = Configuration["username"]
+            self.password = Configuration["password"]
+        except KeyError as e:
+            print("Error Configuration {}".format(e))
+            exit(0)
         if self.username is None or self.password is None:
           print("please Change Username/Password to config.yml")
           exit(0)
@@ -106,6 +118,19 @@ class Utils:
             self.uID = Configuration["uID"]
         except KeyError: 
             self.uID = None
+
+    def readConfiguration(self):
+      # open configuration
+      with open("config.yml", 'r') as stream:
+          try:
+              Configuration = yaml.load(stream, Loader=yaml.RoundTripLoader)
+          except yaml.YAMLError as exc:
+              print("{} [{}]".format("Error in your config.yml please check in", exc))
+              exit(0)
+
+      if Configuration:
+          return Configuration
+
 
     def generateUA(self, identifier):
         pick = int(self.md5hash(identifier), 16)
@@ -137,7 +162,7 @@ class Utils:
                                              self.generateUser(jsonString), str8)
 
     def generateURL(self, uid, php, **kwargs):
-        jsonString = {'uid': self.uID, 'accesstoken': str(self.accessToken)}
+        jsonString = {'uid': str(self.uID), 'accesstoken': str(self.accessToken)}
         jsonString = json.dumps(jsonString, default=set_default)
 
         str8 = self.md5hash("{}{}{}".format(jsonString, jsonString,
@@ -167,6 +192,18 @@ class Utils:
     def requestString(self, php, **kwargs):
         # print("Request: {}, {}".format(php, self.uID))
         self.user_agent = self.generateUA("testtest")
+        try:
+            if kwargs["debug"] is True:
+                http_client.HTTPConnection.debuglevel = 1
+                # You must initialize logging, otherwise you'll not see debug output.
+                logging.basicConfig()
+                logging.getLogger().setLevel(logging.DEBUG)
+                requests_log = logging.getLogger("requests.packages.urllib3")
+                requests_log.setLevel(logging.DEBUG)
+                requests_log.propagate = True
+        except:
+            pass
+
         time.sleep(0.5)
         i = 0
         while True:

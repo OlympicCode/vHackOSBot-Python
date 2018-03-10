@@ -1,10 +1,8 @@
-from utils import Utils
+from network import Network
 
 
+class run():
+    network = Network()
 
-
-
-ut = Utils()
-u = ut.requestString("update.php")
-u = ut.requestString("buy.php", info="1")
-print(u)
+if __name__ == '__main__':
+    main = run()
