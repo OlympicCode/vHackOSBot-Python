@@ -90,15 +90,18 @@ USER_AGENT = ['Dalvik/2.1.0 (Linux; U; Android 5.0.1; GT-I9508V Build/LRX22C)',
               'Dalvik/2.1.0 (Linux; U; Android 6.0; Moto G 2014 Build/MDB08M)',
               'Dalvik/2.1.0 (Linux; U; Android 6.0; XT1097 Build/MPE24.49-18)']
 
+login = "0"
 
 class Utils:
     def __init__(self):
+        self.request = None
         self.secret = "aeffI"
         self.url = "https://api.vhack.cc/mobile/6/"
         self.Configuration = self.readConfiguration()
         try:
             self.username = str(self.Configuration["username"])
             self.password = str(self.Configuration["password"])
+            self.debug = self.Configuration["debug"]
         except KeyError as e:
             print("Error Configuration {}".format(e))
             exit(0)
@@ -120,7 +123,6 @@ class Utils:
             self.uID = self.Configuration["uID"]
         except KeyError: 
             self.uID = None
-        self.login = "0"
 
     def readConfiguration(self):
       # open configuration
@@ -138,7 +140,7 @@ class Utils:
         # append uID/accessToken in configuration file.
         self.Configuration['username'] = self.username
         self.Configuration['password'] = self.password
-
+        self.Configuration['debug'] = self.debug
         try:
             self.Configuration['uID'] = uID
         except KeyError:
@@ -150,13 +152,13 @@ class Utils:
             self.Configuration['accessToken'] = self.accessToken
 
         if not self.Configuration['accessToken'] and not self.Configuration['uID']:
-            request = requests.Session()
-            request.headers.update({'User-agent': self.user_agent})
+            self.request = requests.Session()
+            self.request.headers.update({'User-agent': self.user_agent})
             url = 'login.php'
             url_login = self.Login(url, self.username, self.password)
 
             try:
-                result = request.get(url_login, timeout=3, verify=False)
+                result = self.request.get(url_login, timeout=3, verify=False)
             except requests.exceptions.ConnectTimeout:
                 print("Request Timeout... TimeOut connection '{}'".format(url))
                 exit(0)
@@ -176,10 +178,11 @@ class Utils:
             self.uID = int(parseJson["uid"].encode("UTF-8"))
 
             self.Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- Tour Password Account\n\n", 'password', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- Your Password Account\n\n", 'password', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- debug mode dev online\n\n", 'debug', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
-            
+             
             try:
               # for python 3
                 with io.open('config.yml', 'w') as outfile:
@@ -190,7 +193,9 @@ class Utils:
                 with io.open('config.yml', 'wb') as outfile:
                   yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
                             Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
-             
+            
+            self.request = None
+
         else:
 
             self.Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
@@ -208,7 +213,6 @@ class Utils:
                 with io.open('config.yml', 'wb') as outfile:
                     yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
                               Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
-
 
 
     def generateUA(self, identifier):
@@ -241,9 +245,10 @@ class Utils:
                                              self.generateUser(jsonString), str8)
 
     def generateURL(self, uid, php, **kwargs):
-        jsonString = {'uid': str(self.uID), 'accesstoken': str(self.accessToken)}
+        jsonString = kwargs
+        jsonString.update({'uid': str(self.uID), 'accesstoken': str(self.accessToken)})
+        jsonString.pop("debug", None)
         jsonString = json.dumps(jsonString, default=set_default)
-
         str8 = self.md5hash("{}{}{}".format(jsonString, jsonString,
                                             self.md5hash(jsonString)))
 
@@ -273,30 +278,41 @@ class Utils:
         self.user_agent = self.generateUA("testtest")
         try:
             if kwargs["debug"] is True:
-                coloredlogs.install(level='DEBUG')
-                coloredlogs.install(level='DEBUG', logger=logger)
-                http_client.HTTPConnection.debuglevel = 1
+                http_client.HTTPConnection.debuglevel = 0
                 # You must initialize logging, otherwise you'll not see debug output.
                 logging.basicConfig()
-                logging.getLogger().setLevel(logging.DEBUG)
+                logger = logging.getLogger().setLevel(logging.DEBUG)
                 requests_log = logging.getLogger("requests.packages.urllib3")
                 requests_log.setLevel(logging.DEBUG)
                 requests_log.propagate = True
-        except:
-            pass
+                coloredlogs.install(level='DEBUG')
+                coloredlogs.install(level='DEBUG', logger=requests_log)
+
+        except KeyError:
+            kwargs["debug"] = self.debug
+            if kwargs["debug"] is True:
+                http_client.HTTPConnection.debuglevel = 0
+                # You must initialize logging, otherwise you'll not see debug output.
+                logging.basicConfig()
+                logger = logging.getLogger().setLevel(logging.DEBUG)
+                requests_log = logging.getLogger("requests.packages.urllib3")
+                requests_log.setLevel(logging.DEBUG)
+                requests_log.propagate = True
+                coloredlogs.install(level='DEBUG')
+                coloredlogs.install(level='DEBUG', logger=requests_log)
 
         time.sleep(0.5)
         i = 0
         while True:
             if i > 10:
                 exit(0)
-            if self.uID is None or self.accessToken is None or self.login is "0":
+            if self.uID is None or self.accessToken is None or self.request is None:
                 # connect login.
-                request = requests.Session()
-                request.headers.update({'User-agent': self.user_agent})
+                self.request = requests.Session()
+                self.request.headers.update({'User-agent': self.user_agent})
                 url_login = self.Login('login.php', self.username, self.password)
                 try:
-                    result = request.get(url_login, timeout=3, verify=False)
+                    result = self.request.get(url_login, timeout=3, verify=False)
                 except requests.exceptions.ConnectTimeout:
                     print("Request Timeout... TimeOut connection {}".format(php))
                     exit(0)
@@ -312,15 +328,16 @@ class Utils:
                 if check_return_server is not None:
                     return "Server Error: [{}] {}".format(check_return_server[0], check_return_server[1])
                 
-                self.login = "1"
                 self.accessToken = str(parseJson["accesstoken"])
                 self.uID = int(parseJson["uid"].encode("UTF-8"))
+                global login
+                self.login = "1"
 
                 self.generateConfiguration(self.uID, self.accessToken)
                 
                 # Create First request.
                 try:
-                    result = request.get(self.generateURL(self.uID, php, **kwargs), timeout=3)
+                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=3)
                 except requests.exceptions.ConnectTimeout:
                     print("Request Timeout... TimeOut connection {}".format(php))
                     exit(0)
@@ -329,15 +346,15 @@ class Utils:
                     print("Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
                     exit(0)
 
-                return result.text
+                return result.json()
 
             else:
-                request = requests.Session()
-                request.headers.update({'User-agent': self.user_agent})
+                #request = requests.Session()
+                self.request.headers.update({'User-agent': self.user_agent})
                 
                 # return just request don't login before.
                 try:
-                    result = request.get(self.generateURL(self.uID, php, **kwargs), timeout=3)
+                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=3)
                 except requests.exceptions.ConnectTimeout:
                     print("Request Timeout... TimeOut connection {}".format(php))
                     exit(0)
@@ -355,4 +372,4 @@ class Utils:
                    pass
 
             i = i + 1
-            return result.text
+            return result.json()

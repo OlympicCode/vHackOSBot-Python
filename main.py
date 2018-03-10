@@ -5,6 +5,7 @@ from utils import Utils
 class run():
     ut = Utils()
     network = Network(ut)
+    network.attackTarget()
 
 if __name__ == '__main__':
     main = run()
