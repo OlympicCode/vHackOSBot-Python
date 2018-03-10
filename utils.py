@@ -103,6 +103,7 @@ class Utils:
           print("please Change Username/Password to config.yml")
           exit(0)
         self.user_agent = self.generateUA(self.username + self.password)
+        self.generateConfiguration(uID="", accessToken="")
         try:
             self.accessToken = self.Configuration["accessToken"]
         except:
@@ -125,7 +126,7 @@ class Utils:
       if Configuration:
           return Configuration
 
-    def generateConfiguration(self, uID, accessToken, **kwargs):
+    def generateConfiguration(self, uID=False, accessToken=False):
         # append uID/accessToken in configuration file.
         self.Configuration['username'] = self.username
         self.Configuration['password'] = self.password
@@ -140,14 +141,40 @@ class Utils:
         except KeyError:
             self.Configuration['accessToken'] = self.accessToken
 
-        self.Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
-        self.Configuration.yaml_add_eol_comment("# <- Tour Password Account\n\n", 'password', column=5)
-        self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
-        self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
-        
-        with io.open('config.yml', 'w') as outfile:
-            yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
-                      Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
+        if not self.Configuration['accessToken'] and not self.Configuration['uID']:
+            request = requests.Session()
+            request.headers.update({'User-agent': self.user_agent})
+            url_login = self.Login('login.php', self.username, self.password)
+            result = request.get(url_login)
+            result.encoding = 'UTF-8'
+            parseJson = result.json()
+
+            check_return_server = self.CheckServerError(parseJson)
+            if check_return_server is not None:
+                return "Server Error: [{}] {}".format(check_return_server[0], check_return_server[1])
+
+            self.accessToken = str(parseJson["accesstoken"])
+            self.uID = int(parseJson["uid"].encode("UTF-8"))
+
+            self.Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- Tour Password Account\n\n", 'password', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
+            
+            with io.open('config.yml', 'w') as outfile:
+                yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
+                          Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
+             
+        else:
+
+            self.Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- Tour Password Account\n\n", 'password', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
+            
+            with io.open('config.yml', 'w') as outfile:
+                yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
+                          Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
 
     def generateUA(self, identifier):
         pick = int(self.md5hash(identifier), 16)
