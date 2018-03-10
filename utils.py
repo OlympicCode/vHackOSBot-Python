@@ -5,6 +5,7 @@ import base64
 import hashlib
 import time
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import ssl
 import logging
 import json
@@ -21,6 +22,8 @@ except ImportError:
     import httplib as http_client
 
 #logger = logging.getLogger(__name__)
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 def set_default(obj):
     if isinstance(obj, set):
@@ -121,7 +124,7 @@ class Utils:
 
     def readConfiguration(self):
       # open configuration
-      with open("config.yml", 'rb') as stream:
+      with open("config.yml", 'r') as stream:
           try:
               Configuration = yaml.load(stream, Loader=yaml.RoundTripLoader)
           except yaml.YAMLError as exc:
@@ -177,9 +180,16 @@ class Utils:
             self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
             
-            with io.open('config.yml', 'wb') as outfile:
-                yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
-                          Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
+            try:
+              # for python 3
+                with io.open('config.yml', 'w') as outfile:
+                  yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
+                            Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
+            except:
+              # for python 2
+                with io.open('config.yml', 'wb') as outfile:
+                  yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
+                            Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
              
         else:
 
@@ -188,9 +198,18 @@ class Utils:
             self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
             
-            with io.open('config.yml', 'w') as outfile:
-                yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
-                          Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
+            try:
+              # for python 3
+                with io.open('config.yml', 'w') as outfile:
+                    yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
+                              Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
+            except:
+                # for python 3
+                with io.open('config.yml', 'wb') as outfile:
+                    yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
+                              Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
+
+
 
     def generateUA(self, identifier):
         pick = int(self.md5hash(identifier), 16)
@@ -272,7 +291,6 @@ class Utils:
             if i > 10:
                 exit(0)
             if self.uID is None or self.accessToken is None or self.login is "0":
-                print("test")
                 # connect login.
                 request = requests.Session()
                 request.headers.update({'User-agent': self.user_agent})
