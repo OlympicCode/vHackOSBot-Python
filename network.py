@@ -6,7 +6,11 @@ class Network():
     def __init__(self):
         ut = Utils()
         Configuration = ut.readConfiguration()
-        self.network = ut.requestString("network.php", accesstoken=Configuration["accessToken"], debug=False) #debug=True <- add debug for just developer in params
+        try:
+            self.network = ut.requestString("network.php", accesstoken=Configuration["accessToken"], debug=False) #debug=True <- add debug for just developer in params
+        except KeyError:
+        	ut.generateConfiguration()
+        	self.network = ut.requestString("network.php", accesstoken=Configuration["accessToken"], debug=False)
 
     def getList(self):
         return self.network

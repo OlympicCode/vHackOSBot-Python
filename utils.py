@@ -13,6 +13,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString, DoubleQuotedScala
 import sys
 import io
 import logging
+import datetime
 try:
     import http.client as http_client
 except ImportError:
@@ -118,6 +119,7 @@ class Utils:
             self.uID = Configuration["uID"]
         except KeyError: 
             self.uID = None
+        self.login = "0"
 
     def readConfiguration(self):
       # open configuration
@@ -131,6 +133,29 @@ class Utils:
       if Configuration:
           return Configuration
 
+    def generateConfiguration(self, uID, accessToken, **kwargs):
+        # append uID/accessToken in configuration file.
+        Configuration['username'] = self.username
+        Configuration['password'] = self.password
+
+        try:
+            Configuration['uID'] = uID
+        except KeyError:
+            Configuration['uID'] = self.uID
+
+        try:
+            Configuration['accessToken'] = accessToken
+        except KeyError:
+            Configuration['accessToken'] = self.accessToken
+
+        Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
+        Configuration.yaml_add_eol_comment("# <- Tour Password Account\n\n", 'password', column=5)
+        Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
+        Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
+        
+        with io.open('config.yml', 'w') as outfile:
+            yaml.dump(Configuration, stream=outfile, default_flow_style=False, 
+                      Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
 
     def generateUA(self, identifier):
         pick = int(self.md5hash(identifier), 16)
@@ -209,7 +234,7 @@ class Utils:
         while True:
             if i > 10:
                 exit(0)
-            if self.uID is None or self.accessToken is None:
+            if self.uID is None or self.accessToken is None or self.login is "0":
                 # connect login.
                 request = requests.Session()
                 request.headers.update({'User-agent': self.user_agent})
@@ -221,23 +246,13 @@ class Utils:
                 check_return_server = self.CheckServerError(parseJson)
                 if check_return_server is not None:
                     return "Server Error: [{}] {}".format(check_return_server[0], check_return_server[1])
-
+                
+                self.login = "1"
                 self.accessToken = str(parseJson["accesstoken"])
                 self.uID = int(parseJson["uid"].encode("UTF-8"))
 
-                # append uID/accessToken in configuration file.
-                Configuration['username'] = self.username
-                Configuration['password'] = self.password
-                Configuration['uID'] = self.uID
-                Configuration['accessToken'] = self.accessToken
+                self.generateConfiguration(self.uID, self.accessToken)
                 
-                Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
-                Configuration.yaml_add_eol_comment("# <- Tour Password Account\n\n", 'password', column=5)
-                Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
-                Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
-                with io.open('config.yml', 'w') as outfile:
-                    yaml.dump(Configuration, stream=outfile, default_flow_style=False, Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
-              
                 # Create First request.
                 result = request.get(self.generateURL(self.uID, php, **kwargs))
                 return result.text
