@@ -28,9 +28,8 @@ class Network():
                   list_ip_dontexist.add(targetNetwork["ip"])
         list_ip_dontexist = set(list_ip_exist)^set(list_ip_dontexist)
         
+        self.ut.viewsPrint("showMsgTotalBruteForceInfo", "[{}] - Total Target Bruteforced ({}), and try to ({}) not bruteforced".format(os.path.basename(__file__), len(list_ip_exist), len(list_ip_dontexist)))
 
-        self.ut.viewsPrint("showMsgTotalBruteForceInfo", "[{0}] - Total Target Bruteforced ({1}), and try to ({2}) not bruteforced".format(os.path.basename(__file__), len(list_ip_exist), len(list_ip_dontexist)))
-        
         # scan don't exist ip in bruteforce list
         for target in list_ip_dontexist:
             self.targetHack = self.ut.requestString("exploit.php", target=str(target), accesstoken=self.Configuration["accessToken"])
@@ -69,8 +68,7 @@ class Network():
         except KeyError:
            try:
               reqBanking["remotepassword"]
-              self.ut.viewsPrint("showMsgBruteForcedbutPasswordFail", "[{}] - Already '{}' Bruteforced but password Fail.".format(os.path.basename(__file__), ip))
-              
+              self.ut.viewsPrint("showMsgBruteForcedbutPasswordFail", "[{}] - Already '{}' Bruteforced but password Fail.".format(os.path.basename(__file__), ip))              
            except KeyError:
               self.bruteForceBanking(ip)
 

@@ -21,6 +21,8 @@ try:
 except ImportError:
     # Python 2
     import httplib as http_client
+from terminaltables import AsciiTable
+from sys import stdout
 
 #logger = logging.getLogger(__name__)
 
@@ -111,6 +113,7 @@ class Utils:
           print("please Change Username/Password to config.yml")
           exit(0)
         self.user_agent = self.generateUA(self.username + self.password)
+        self.all_data = [['Script bot work']]
     
         try:
             self.generateConfiguration(uID="", accessToken="")
@@ -146,7 +149,24 @@ class Utils:
               if self.Configuration["debug"]:
                 print("\033[0;103m\033[1;30mOutputBot: {} - {}\033[0m".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg))
               else:
-                print("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg))
+                return self.OutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg), 2)
+
+    def OutputTable(self, msg, select_tables):
+      self.all_data.append([msg])
+      print(self.all_data)
+      print("\033[H\033[J")
+      data = self.all_data
+
+      if select_tables == 1:
+        table = AsciiTable(data)
+        print(table.table)
+
+      elif select_tables == 2:
+        account_information = [["Your account information"]]
+        table1 = AsciiTable(data)
+        table2 = AsciiTable(account_information)
+        print(table1.table)
+        print(table2.table)
 
 
     def generateConfiguration(self, uID=False, accessToken=False):
