@@ -2,3 +2,7 @@ username:  # <- Your Username Account
 password:  # <- Tour Password Account
 
 debug: false # <- debug mode dev online
+
+# exemple ['All', '!showMsgTotalBruteForceInfo'] <- show all but don't show Total Brute Force Information return bot print.
+# exemple ['showMsgTotalBruteForceInfo'] <- just show Total Brute Force Information return bot print.
+show_info: [All] # <- show the return bot print information
