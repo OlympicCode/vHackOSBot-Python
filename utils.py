@@ -143,7 +143,11 @@ class Utils:
             if "!{}".format(condition) in self.Configuration["show_info"]:
                 pass
             else:
+              if self.Configuration["debug"]:
+                print("\033[0;103m\033[1;30mOutputBot: {} - {}\033[0m".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg))
+              else:
                 print("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg))
+
 
     def generateConfiguration(self, uID=False, accessToken=False):
         # append uID/accessToken in configuration file.
