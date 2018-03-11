@@ -101,6 +101,7 @@ class Utils:
         self.secret = "aeffI"
         self.url = "https://api.vhack.cc/mobile/6/"
         self.Configuration = self.readConfiguration()
+        self.numberLoop = 0
         try:
             self.username = str(self.Configuration["username"])
             self.password = str(self.Configuration["password"])
@@ -152,8 +153,14 @@ class Utils:
                 return self.OutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg), 2)
 
     def OutputTable(self, msg, select_tables):
+      if self.numberLoop <= 6:
+          self.numberLoop = self.numberLoop + 1
+      else:
+          self.numberLoop = 0
+
+      if len(self.all_data) > 6:
+        del self.all_data[-6]
       self.all_data.append([msg])
-      print(self.all_data)
       print("\033[H\033[J")
       data = self.all_data
 
@@ -162,7 +169,8 @@ class Utils:
         print(table.table)
 
       elif select_tables == 2:
-        account_information = [["Your account information"]]
+
+        account_information = [["Your account information"], [self.numberLoop]]
         table1 = AsciiTable(data)
         table2 = AsciiTable(account_information)
         print(table1.table)
