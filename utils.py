@@ -15,6 +15,7 @@ import sys, os
 import io
 import logging, coloredlogs
 import datetime
+from time import gmtime, strftime
 try:
     import http.client as http_client
 except ImportError:
@@ -142,7 +143,7 @@ class Utils:
             if "!{}".format(condition) in self.Configuration["show_info"]:
                 pass
             else:
-                print(Msg)
+                print("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg))
 
     def generateConfiguration(self, uID=False, accessToken=False):
         # append uID/accessToken in configuration file.
