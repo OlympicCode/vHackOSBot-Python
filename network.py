@@ -27,7 +27,9 @@ class Network():
               else:
                   list_ip_dontexist.add(targetNetwork["ip"])
         list_ip_dontexist = set(list_ip_exist)^set(list_ip_dontexist)
-        print("Total Target Bruteforced ({0}), and try to ({1}) not bruteforced".format(len(list_ip_exist), len(list_ip_dontexist)))
+        
+
+        self.ut.viewsPrint("showMsgTotalBruteForceInfo", "Total Target Bruteforced ({0}), and try to ({1}) not bruteforced".format(len(list_ip_exist), len(list_ip_dontexist)))
         
         # scan don't exist ip in bruteforce list
         for target in list_ip_dontexist:
@@ -49,7 +51,7 @@ class Network():
             if self.targetHack["result"] == "0":
                 self.targetHack = self.ut.requestString("remote.php", target=str(targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
             elif self.targetHack["result"] == "2":
-                print("don't possible to hack sdk exploit = 0")
+                self.ut.viewsPrint("showMsgErrorSdk=0", "don't possible to hack sdk exploit = 0")
                 break
 
     def getBanking(self, ip):
@@ -57,15 +59,18 @@ class Network():
         try:
             reqBanking["transactions"]
             if int(reqBanking['withdraw']) > 0:
-               print("Already '{}' Bruteforced collect money again...".format(ip))
+               self.ut.viewsPrint("showMsgCollectMoneyUser", "Already '{}' Bruteforced collect money again...".format(ip))
+
                reqMoney = self.ut.requestString("remotebanking.php", target=ip, accesstoken=self.Configuration["accessToken"], action="100", lang="fr")
                print(reqMoney)
             else:
-               print("target '{}' Money Null".format(ip))
+               self.ut.viewsPrint("showMsgNoMoneyTarget", "target '{}' Money Null".format(ip))
+
         except KeyError:
            try:
               reqBanking["remotepassword"]
-              print("Already '{}' Bruteforced but password Fail.".format(ip))
+              self.ut.viewsPrint("showMsgBruteForcedbutPasswordFail", "Already '{}' Bruteforced but password Fail.".format(ip))
+              
            except KeyError:
               self.bruteForceBanking(ip)
 

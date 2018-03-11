@@ -11,7 +11,7 @@ import logging
 import json
 import ruamel.yaml as yaml
 from ruamel.yaml.scalarstring import SingleQuotedScalarString, DoubleQuotedScalarString
-import sys
+import sys, os
 import io
 import logging, coloredlogs
 import datetime
@@ -102,6 +102,7 @@ class Utils:
             self.username = str(self.Configuration["username"])
             self.password = str(self.Configuration["password"])
             self.debug = self.Configuration["debug"]
+            self.show_info = self.Configuration["show_info"]
         except KeyError as e:
             print("Error Configuration {}".format(e))
             exit(0)
@@ -136,11 +137,22 @@ class Utils:
       if Configuration:
           return Configuration
 
+    def viewsPrint(self, condition, Msg):
+      if condition in self.Configuration["show_info"] or "All" in self.Configuration["show_info"]:
+            if "!{}".format(condition) in self.Configuration["show_info"]:
+                pass
+            else:
+                print(Msg)
+
     def generateConfiguration(self, uID=False, accessToken=False):
         # append uID/accessToken in configuration file.
         self.Configuration['username'] = self.username
         self.Configuration['password'] = self.password
         self.Configuration['debug'] = self.debug
+        self.Configuration['show_info'] = self.show_info
+
+        os.remove("config.yml")
+        
         try:
             self.Configuration['uID'] = uID
         except KeyError:
@@ -180,12 +192,13 @@ class Utils:
             self.Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Your Password Account\n\n", 'password', column=5)
             self.Configuration.yaml_add_eol_comment("# <- debug mode dev online\n\n", 'debug', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- show the return bot print information\n\n", 'show_info', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
              
             try:
               # for python 3
-                with io.open('config.yml', 'w') as outfile:
+                with io.open('config.yml', 'w+') as outfile:
                   yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
                             Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
             except:
