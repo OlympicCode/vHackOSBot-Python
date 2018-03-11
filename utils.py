@@ -346,6 +346,9 @@ class Utils:
                     print("Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
                     exit(0)
 
+                if kwargs["debug"] is True:
+                    logging.info(result.json())
+
                 return result.json()
 
             else:
@@ -372,4 +375,6 @@ class Utils:
                    pass
 
             i = i + 1
+            if kwargs["debug"] is True:
+                logging.info(result.json())
             return result.json()
