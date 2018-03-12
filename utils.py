@@ -103,11 +103,13 @@ class Utils:
         self.Configuration = self.readConfiguration()
         self.numberLoop = 0
         self.account_info = None
+        self.login = "0"
         try:
             self.username = str(self.Configuration["username"])
             self.password = str(self.Configuration["password"])
             self.debug = self.Configuration["debug"]
             self.show_info = self.Configuration["show_info"]
+            self.sync_mobile = self.Configuration["sync_mobile"]
         except KeyError as e:
             print("Error Configuration {}".format(e))
             exit(0)
@@ -118,7 +120,10 @@ class Utils:
         self.all_data = [['Console Log vHackOS - by vBlackOut  [https://github.com/vBlackOut]']]
     
         try:
-            self.generateConfiguration(uID="", accessToken="")
+            if self.sync_mobile:
+                self.generateConfiguration(uID=self.Configuration["uID"], accessToken=self.Configuration["accessToken"])
+            else:
+                self.generateConfiguration(uID="", accessToken="")
         except TypeError:
             self.generateConfiguration()
 
@@ -196,6 +201,7 @@ class Utils:
         self.Configuration['password'] = self.password
         self.Configuration['debug'] = self.debug
         self.Configuration['show_info'] = self.show_info
+        self.Configuration['sync_mobile'] = self.sync_mobile
 
         os.remove("config.yml")
         
@@ -239,6 +245,7 @@ class Utils:
             self.Configuration.yaml_add_eol_comment("# <- Your Password Account\n\n", 'password', column=5)
             self.Configuration.yaml_add_eol_comment("# <- debug mode dev online\n\n", 'debug', column=5)
             self.Configuration.yaml_add_eol_comment("# <- show the return bot print information\n\n", 'show_info', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone.\n\n", 'sync_mobile', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
              
@@ -259,6 +266,9 @@ class Utils:
 
             self.Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Tour Password Account\n\n", 'password', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- debug mode dev online\n\n", 'debug', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- show the return bot print information\n\n", 'show_info', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone.\n\n", 'sync_mobile', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
             
@@ -365,7 +375,7 @@ class Utils:
         while True:
             if i > 10:
                 exit(0)
-            if self.uID is None or self.accessToken is None or self.request is None:
+            if self.uID is None or self.accessToken is None or self.request is None and self.sync_mobile is False:
                 # connect login.
                 self.request = requests.Session()
                 self.request.headers.update({'User-agent': self.user_agent})
@@ -410,10 +420,18 @@ class Utils:
 
                 return result.json()
 
-            else:
+            elif self.uID is not None or self.accessToken is not None:
                 #request = requests.Session()
+                if not self.request:
+                  self.request = requests.Session()
+
                 self.request.headers.update({'User-agent': self.user_agent})
-                
+
+                if self.sync_mobile is True:
+                    if self.login is "0":
+                        self.login = "1"
+                        self.request.get(self.generateURL(self.uID, 'update.php', accesstoken=self.accessToken, lang="fr", lastread="0"), timeout=3)
+
                 # return just request don't login before.
                 try:
                     result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=3)
@@ -429,11 +447,11 @@ class Utils:
                 result.encoding = 'UTF-8'
                 parseJson = result.json()
                 try:
-                   self.accessToken = str(parseJson["accesstoken"])
+                    self.accessToken = str(parseJson["accesstoken"])
                 except KeyError:
-                   pass
+                    pass
 
             i = i + 1
             if kwargs["debug"] is True:
                 logging.info(result.json())
-            return result.json()
+            return parseJson
