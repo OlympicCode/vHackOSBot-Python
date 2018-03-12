@@ -68,16 +68,14 @@ class Network():
             else:
                self.ut.viewsPrint("showMsgNoMoneyTarget", "[{}] - target '{}' Money Null".format(os.path.basename(__file__), ip))
         except KeyError:
-           try:
-              reqBanking["remotepassword"]
-              self.ut.viewsPrint("showMsgBruteForcedbutPasswordFail", "[{}] - \033[31mAlready '{}' Bruteforced but password Fail.\033[0m".format(os.path.basename(__file__), ip))              
-           except KeyError:
-              pass
-              self.bruteForceBanking(ip)
+            reqBanking["remotepassword"]
+            self.ut.viewsPrint("showMsgBruteForcedbutPasswordFail", "[{}] - \033[31mAlready '{}' Bruteforced but password Fail.\033[0m".format(os.path.basename(__file__), ip))  
+            self.bruteForceBanking(ip)
 
     def bruteForceBanking(self, ip):
-        reqBruteForcebanking = self.ut.requestString("startbruteforce.php", target=ip, accesstoken=self.Configuration["accessToken"]) 
-        #self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - {}".format(os.path.basename(__file__), reqBruteForcebanking))
+        reqBruteForcebanking = self.ut.requestString("startbruteforce.php", target=ip, accesstoken=self.Configuration["accessToken"])
+        if int(reqBruteForcebanking["result"]) is 0:
+            self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[32m{} '{}'\033[0m".format(os.path.basename(__file__), "\033[32mStart Bruteforce to", ip ))
 
     def retryBruteForce(self, ip):
         pass
