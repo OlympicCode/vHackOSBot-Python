@@ -11,7 +11,7 @@ import logging
 import json
 import ruamel.yaml as yaml
 from ruamel.yaml.scalarstring import SingleQuotedScalarString, DoubleQuotedScalarString
-import sys, os
+import sys, os, platform
 import io
 import logging, coloredlogs
 import datetime
@@ -23,6 +23,7 @@ except ImportError:
     import httplib as http_client
 from terminaltables import AsciiTable, SingleTable
 from sys import stdout
+import re
 
 #logger = logging.getLogger(__name__)
 
@@ -97,6 +98,7 @@ login = "0"
 
 class Utils:
     def __init__(self):
+        self.platform = platform.system()
         self.request = None
         self.secret = "aeffI"
         self.url = "https://api.vhack.cc/mobile/6/"
@@ -154,9 +156,9 @@ class Utils:
                 pass
             else:
               if self.Configuration["debug"]:
-                print("\033[0;103m\033[1;30mOutputBot: {} - {}\033[0m".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg))
+                print(printConsole("\033[0;103m\033[1;30mOutputBot: {} - {}\033[0m".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg)))
               else:
-                return self.OutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg), 2)
+                return self.OutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), self.printConsole(Msg)), 2)
 
     def OutputTable(self, msg, select_tables):
       if self.numberLoop < 6:
@@ -190,10 +192,22 @@ class Utils:
                                                                                                      "Your level ", self.account_info["level"])]]
         table1 = SingleTable(data)
         table2 = SingleTable(account_information)
-        print("\033[H\033[J")
+        if self.platform  == "Linux":
+            print("\033[H\033[J")
+        else:
+        	os.system('cls')
         print(table1.table)
         print(table2.table)
 
+    def getPlatform(self):
+        return self.platform
+
+    def printConsole(self, txt):
+        if self.platform == "Linux":
+            return txt
+        else:
+            ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
+            return ansi_escape.sub('', txt)
 
     def generateConfiguration(self, uID=False, accessToken=False):
         # append uID/accessToken in configuration file.
