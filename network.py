@@ -15,17 +15,28 @@ class Network():
             return self.network["ips"]
 
     def getListBruteforce(self):
-        return self.targetBruted["brutes"]
+        try: 
+            return self.targetBruted["brutes"]
+        except KeyError:
+           return []
 
     def attackTarget(self):
         list_ip_exist = set()
         list_ip_dontexist = set()
-        for targetBrute in self.getListBruteforce():
+        if len(self.getListBruteforce()) > 0:
+            for targetBrute in self.getListBruteforce():
+               for targetNetwork in self.getListNetwork("cm"):
+                  if targetBrute["user_ip"] == targetNetwork["ip"]:
+                      list_ip_exist.add(targetBrute["user_ip"])
+                  else:
+                      list_ip_dontexist.add(targetNetwork["ip"])
+        else:
            for targetNetwork in self.getListNetwork("cm"):
               if targetBrute["user_ip"] == targetNetwork["ip"]:
                   list_ip_exist.add(targetBrute["user_ip"])
               else:
                   list_ip_dontexist.add(targetNetwork["ip"])
+
         list_ip_dontexist = set(list_ip_exist)^set(list_ip_dontexist)
         
         self.ut.viewsPrint("showMsgTotalBruteForceInfo", "[{}] - Total Target Bruteforced ({}), and try to ({}) not bruteforced".format(os.path.basename(__file__), len(list_ip_exist), len(list_ip_dontexist)))
