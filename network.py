@@ -32,10 +32,7 @@ class Network():
                       list_ip_dontexist.add(targetNetwork["ip"])
         else:
            for targetNetwork in self.getListNetwork("cm"):
-              if targetBrute["user_ip"] == targetNetwork["ip"]:
-                  list_ip_exist.add(targetBrute["user_ip"])
-              else:
-                  list_ip_dontexist.add(targetNetwork["ip"])
+                list_ip_dontexist.add(targetNetwork["ip"])
 
         list_ip_dontexist = set(list_ip_exist)^set(list_ip_dontexist)
         
