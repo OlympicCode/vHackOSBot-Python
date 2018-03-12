@@ -21,7 +21,7 @@ try:
 except ImportError:
     # Python 2
     import httplib as http_client
-from terminaltables import AsciiTable
+from terminaltables import AsciiTable, SingleTable
 from sys import stdout
 
 #logger = logging.getLogger(__name__)
@@ -102,6 +102,7 @@ class Utils:
         self.url = "https://api.vhack.cc/mobile/6/"
         self.Configuration = self.readConfiguration()
         self.numberLoop = 0
+        self.account_info = None
         try:
             self.username = str(self.Configuration["username"])
             self.password = str(self.Configuration["password"])
@@ -114,7 +115,7 @@ class Utils:
           print("please Change Username/Password to config.yml")
           exit(0)
         self.user_agent = self.generateUA(self.username + self.password)
-        self.all_data = [['Script bot work']]
+        self.all_data = [['Console Log vHackOS - by vBlackOut  [https://github.com/vBlackOut]']]
     
         try:
             self.generateConfiguration(uID="", accessToken="")
@@ -153,7 +154,7 @@ class Utils:
                 return self.OutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg), 2)
 
     def OutputTable(self, msg, select_tables):
-      if self.numberLoop <= 6:
+      if self.numberLoop < 6:
           self.numberLoop = self.numberLoop + 1
       else:
           self.numberLoop = 0
@@ -161,7 +162,6 @@ class Utils:
       if len(self.all_data) > 6:
         del self.all_data[-6]
       self.all_data.append([msg])
-      print("\033[H\033[J")
       data = self.all_data
 
       if select_tables == 1:
@@ -169,10 +169,23 @@ class Utils:
         print(table.table)
 
       elif select_tables == 2:
+        self.account_info = self.requestString("update.php", uID=self.uID, accesstoken=self.accessToken)
+        account_information = [["your account information", "update information"], 
+                               ["{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}\n{10}: {11}".format("Your exploits ", self.account_info["exploits"],
+                                                                                                          "Your spam ", self.account_info["spam"],
+                                                                                                          "Your network speed ", self.account_info["inet"],
+                                                                                                          "Your money ", self.account_info["money"],
+                                                                                                          "Your IP ", self.account_info["ipaddress"],
+                                                                                                          "Your netcoins ", self.account_info["netcoins"]), 
 
-        account_information = [["Your account information"], [self.numberLoop]]
-        table1 = AsciiTable(data)
-        table2 = AsciiTable(account_information)
+                               "{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}".format("Your SDK ", self.account_info["sdk"],
+                                                                                                     "Your Firewall ", self.account_info["fw"],
+                                                                                                     "Your Antivirus ", self.account_info["av"],
+                                                                                                     "Your BruteForce ", self.account_info["brute"],
+                                                                                                     "Your level ", self.account_info["level"])]]
+        table1 = SingleTable(data)
+        table2 = SingleTable(account_information)
+        print("\033[H\033[J")
         print(table1.table)
         print(table2.table)
 

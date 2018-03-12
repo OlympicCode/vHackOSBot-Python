@@ -38,15 +38,13 @@ class Network():
 
         # get money to bruteforce list
         for target in list_ip_exist:
-            self.targetHack = self.ut.requestString("exploit.php", target=str(target), accesstoken=self.Configuration["accessToken"])
-            self.targetHack = self.ut.requestString("remote.php", target=str(target), accesstoken=self.Configuration["accessToken"])
+            s1 = self.targetHack = self.ut.requestString("exploit.php", target=str(target), accesstoken=self.Configuration["accessToken"])
+            s2 = self.targetHack = self.ut.requestString("remote.php", target=str(target), accesstoken=self.Configuration["accessToken"])
             self.getBanking(str(target))
 
         # search new user bruteforce and start bruteforce.
         for targetNetwork in self.getListNetwork("ips"):
-            print(targetNetwork["ip"])
             self.targetHack = self.ut.requestString("exploit.php", target=str(targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
-            print(self.targetHack["result"])
             if self.targetHack["result"] == "0":
                 self.targetHack = self.ut.requestString("remote.php", target=str(targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
             elif self.targetHack["result"] == "2":
@@ -56,25 +54,22 @@ class Network():
     def getBanking(self, ip):
         reqBanking = self.ut.requestString("remotebanking.php", target=ip, accesstoken=self.Configuration["accessToken"])
         try:
-            reqBanking["transactions"]
-            if int(reqBanking['withdraw']) > 0:
-               self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - Already '{}' Bruteforced collect money again...".format(os.path.basename(__file__), ip))
-
+            if int(reqBanking['remotemoney']) > 0:
+               self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[32mAlready '{}' collect money +{}\033[0m".format(os.path.basename(__file__), ip, reqBanking['remotemoney']))
                reqMoney = self.ut.requestString("remotebanking.php", target=ip, accesstoken=self.Configuration["accessToken"], action="100", lang="fr")
-               print(reqMoney)
             else:
                self.ut.viewsPrint("showMsgNoMoneyTarget", "[{}] - target '{}' Money Null".format(os.path.basename(__file__), ip))
-
         except KeyError:
            try:
               reqBanking["remotepassword"]
-              self.ut.viewsPrint("showMsgBruteForcedbutPasswordFail", "[{}] - Already '{}' Bruteforced but password Fail.".format(os.path.basename(__file__), ip))              
+              self.ut.viewsPrint("showMsgBruteForcedbutPasswordFail", "[{}] - \033[31mAlready '{}' Bruteforced but password Fail.\033[0m".format(os.path.basename(__file__), ip))              
            except KeyError:
+              pass
               self.bruteForceBanking(ip)
 
     def bruteForceBanking(self, ip):
         reqBruteForcebanking = self.ut.requestString("startbruteforce.php", target=ip, accesstoken=self.Configuration["accessToken"]) 
-        print(reqBruteForcebanking)
+        #self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - {}".format(os.path.basename(__file__), reqBruteForcebanking))
 
     def retryBruteForce(self, ip):
         pass

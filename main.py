@@ -7,4 +7,5 @@ class run():
     network.attackTarget()
 
 if __name__ == '__main__':
-    main = run()
+    while 1:
+       main = run()
