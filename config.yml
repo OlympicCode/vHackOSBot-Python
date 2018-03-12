@@ -3,6 +3,11 @@ password:  # <- Tour Password Account
 
 debug: false # <- debug mode dev online
 
+sync_mobile: false # <- If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone.
+
 # exemple ['All', '!showMsgTotalBruteForceInfo'] <- show all but don't show Total Brute Force Information return bot print.
 # exemple ['showMsgTotalBruteForceInfo'] <- just show Total Brute Force Information return bot print.
 show_info: [All] # <- show the return bot print information
+
+uID:  # <- Automatical uID for your account don't change /!\
+accessToken:  # <- Automatical accessToken for your account don't change /!\
