@@ -30,10 +30,24 @@ try:
 except:
     windows = True
 import time
+import termios
+import contextlib
 
 #logger = logging.getLogger(__name__)
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+
+@contextlib.contextmanager
+def raw_mode(file):
+    old_attrs = termios.tcgetattr(file.fileno())
+    new_attrs = old_attrs[:]
+    new_attrs[3] = new_attrs[3] & ~(termios.ECHO | termios.ICANON)
+    try:
+        termios.tcsetattr(file.fileno(), termios.TCSADRAIN, new_attrs)
+        yield
+    finally:
+        termios.tcsetattr(file.fileno(), termios.TCSADRAIN, old_attrs)
 
 def set_default(obj):
     if isinstance(obj, set):
@@ -205,12 +219,20 @@ class Utils:
 
         # for windows Try to print tables else pass
         try:
-
             print(table1.table)
             print(table2.table)
             if windows == False:
-                sys.stdout.write("\rWaiting for user input : ")
-                #os.system("echo '{}' | xclip -selection clipboard".format("waiting for user input: "))
+                sys.stdout.write("\nCMD: [m] Get Money \nWaiting for user input : ")
+                with raw_mode(sys.stdin):
+                    try:
+                        while True:
+                            ch = sys.stdin.read(1)
+                            if ch in "m":
+                              sys.stdout.write("\nyour money...")
+                            else:
+                              sys.stdout.write(ch)
+                    except (KeyboardInterrupt, EOFError):
+                        pass
                 try:
                     stdin = sys.stdin.read()
                     if "cmd" in stdin:
@@ -218,7 +240,7 @@ class Utils:
                        time.sleep(2)
                 except IOError:
                     pass
-                #time.sleep(1)
+                time.sleep(1)
         except:
            pass
 
