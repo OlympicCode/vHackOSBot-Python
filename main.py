@@ -2,7 +2,10 @@ from network import Network
 from utils import Utils
 import sys
 import os
-import fcntl
+try:
+   import fcntl
+except:
+	pass
 
 class run():
     def __init__(self, ut):
@@ -11,7 +14,10 @@ class run():
 
 if __name__ == '__main__':
     ut = Utils()
-    fl = fcntl.fcntl(sys.stdin.fileno(), fcntl.F_GETFL)
-    fcntl.fcntl(sys.stdin.fileno(), fcntl.F_SETFL, fl | os.O_NONBLOCK)
+    try:
+       fl = fcntl.fcntl(sys.stdin.fileno(), fcntl.F_GETFL)
+       fcntl.fcntl(sys.stdin.fileno(), fcntl.F_SETFL, fl | os.O_NONBLOCK)
+    except:
+    	pass
     while 1:
        main = run(ut)
