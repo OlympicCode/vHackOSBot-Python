@@ -24,7 +24,11 @@ except ImportError:
 from terminaltables import AsciiTable, SingleTable
 from sys import stdout
 import re
-import fcntl
+try:
+    import fcntl
+    windows = False
+except:
+    windows = True
 import time
 
 #logger = logging.getLogger(__name__)
@@ -157,7 +161,7 @@ class Utils:
                 pass
             else:
               if self.Configuration["debug"]:
-                print(printConsole("\033[0;103m\033[1;30mOutputBot: {} - {}\033[0m".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg)))
+                print(self.printConsole("\033[0;103m\033[1;30mOutputBot: {} - {}\033[0m".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg)))
               else:
                 return self.OutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), self.printConsole(Msg)), 2)
 
@@ -201,17 +205,20 @@ class Utils:
 
         # for windows Try to print tables else pass
         try:
+
             print(table1.table)
             print(table2.table)
-            sys.stdout.write("\rWaiting for user input : ")
-            try:
-                stdin = sys.stdin.read()
-                if "cmd" in stdin:
-                   print("\ncmd entering")
-                   time.sleep(2)
-            except IOError:
-                pass
-            time.sleep(1)
+            if windows == False:
+                sys.stdout.write("\rWaiting for user input : ")
+                #os.system("echo '{}' | xclip -selection clipboard".format("waiting for user input: "))
+                try:
+                    stdin = sys.stdin.read()
+                    if "cmd" in stdin:
+                       print("\ncmd entering")
+                       time.sleep(2)
+                except IOError:
+                    pass
+                #time.sleep(1)
         except:
            pass
 
@@ -235,7 +242,7 @@ class Utils:
         self.Configuration['sync_mobile'] = self.sync_mobile
 
         # delete old file 
-        os.remove("config.yml")
+        #os.remove("config.yml")
         
         try:
             self.Configuration['uID'] = uID
