@@ -31,8 +31,11 @@ class Network():
                   else:
                       list_ip_dontexist.add(targetNetwork["ip"])
         else:
-           for targetNetwork in self.getListNetwork("cm"):
-                list_ip_dontexist.add(targetNetwork["ip"])
+           try:
+                for targetNetwork in self.getListNetwork("cm"):
+                    list_ip_dontexist.add(targetNetwork["ip"])
+            except:
+                self.ut.viewsPrint("showMsgBlockBruteForceInfoList", "[{}] - weird, you are not list player attack... :(".format(os.path.basename(__file__), len(list_ip_exist), len(list_ip_dontexist)))
 
         list_ip_dontexist = set(list_ip_exist)^set(list_ip_dontexist)
         

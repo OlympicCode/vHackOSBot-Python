@@ -24,6 +24,8 @@ except ImportError:
 from terminaltables import AsciiTable, SingleTable
 from sys import stdout
 import re
+import fcntl
+import time
 
 #logger = logging.getLogger(__name__)
 
@@ -94,14 +96,13 @@ USER_AGENT = ['Dalvik/2.1.0 (Linux; U; Android 5.0.1; GT-I9508V Build/LRX22C)',
               'Dalvik/2.1.0 (Linux; U; Android 6.0; Moto G 2014 Build/MDB08M)',
               'Dalvik/2.1.0 (Linux; U; Android 6.0; XT1097 Build/MPE24.49-18)']
 
-login = "0"
 
 class Utils:
     def __init__(self):
         self.platform = platform.system()
         self.request = None
         self.secret = "aeffI"
-        self.url = "https://api.vhack.cc/mobile/6/"
+        self.url = "https://api.vhack.cc/mobile/10/"
         self.Configuration = self.readConfiguration()
         self.numberLoop = 0
         self.account_info = None
@@ -192,12 +193,28 @@ class Utils:
                                                                                                      "Your level ", self.account_info["level"])]]
         table1 = SingleTable(data)
         table2 = SingleTable(account_information)
+
         if self.platform  == "Linux":
             print("\033[H\033[J")
         else:
-        	os.system('cls')
-        print(table1.table)
-        print(table2.table)
+            os.system('cls')
+
+        # for windows Try to print tables else pass
+        try:
+            print(table1.table)
+            print(table2.table)
+            sys.stdout.write("\rWaiting for user input : ")
+            try:
+                stdin = sys.stdin.read()
+                if "cmd" in stdin:
+                   print("\ncmd entering")
+                   time.sleep(2)
+            except IOError:
+                pass
+            time.sleep(1)
+        except:
+           pass
+
 
     def getPlatform(self):
         return self.platform
@@ -210,13 +227,14 @@ class Utils:
             return ansi_escape.sub('', txt)
 
     def generateConfiguration(self, uID=False, accessToken=False):
-        # append uID/accessToken in configuration file.
+        # append uID/accessToken and other param in new configuration file.
         self.Configuration['username'] = self.username
         self.Configuration['password'] = self.password
         self.Configuration['debug'] = self.debug
         self.Configuration['show_info'] = self.show_info
         self.Configuration['sync_mobile'] = self.sync_mobile
 
+        # delete old file 
         os.remove("config.yml")
         
         try:
@@ -292,7 +310,7 @@ class Utils:
                     yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
                               Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
             except:
-                # for python 3
+                # for python 2
                 with io.open('config.yml', 'wb') as outfile:
                     yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
                               Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
