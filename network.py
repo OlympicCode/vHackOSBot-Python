@@ -12,7 +12,10 @@ class Network():
         if option == "cm":
             return self.network["cm"]
         elif option == "ips":
-            return self.network["ips"]
+            try:
+               return self.network["ips"]
+            except:
+               return []
 
     def getListBruteforce(self):
         try: 

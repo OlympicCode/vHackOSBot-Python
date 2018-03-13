@@ -120,7 +120,7 @@ class Utils:
         self.platform = platform.system()
         self.request = None
         self.secret = "aeffI"
-        self.url = "https://api.vhack.cc/mobile/10/"
+        self.url = "https://api.vhack.cc/mobile/11/"
         self.Configuration = self.readConfiguration()
         self.numberLoop = 0
         self.account_info = None
@@ -195,20 +195,23 @@ class Utils:
         print(table.table)
 
       elif select_tables == 2:
-        self.account_info = self.requestString("update.php", uID=self.uID, accesstoken=self.accessToken)
-        account_information = [["your account information", "update information"], 
-                               ["{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}\n{10}: {11}".format("Your exploits ", self.account_info["exploits"],
-                                                                                                          "Your spam ", self.account_info["spam"],
-                                                                                                          "Your network speed ", self.account_info["inet"],
-                                                                                                          "Your money ", self.account_info["money"],
-                                                                                                          "Your IP ", self.account_info["ipaddress"],
-                                                                                                          "Your netcoins ", self.account_info["netcoins"]), 
+        self.account_info = self.requestStringNowait("update.php", uID=self.uID, accesstoken=self.accessToken)
+        try:
+            account_information = [["your account information", "update information"], 
+                                   ["{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}\n{10}: {11}".format("Your exploits ", self.account_info["exploits"],
+                                                                                                              "Your spam ", self.account_info["spam"],
+                                                                                                              "Your network speed ", self.account_info["inet"],
+                                                                                                              "Your money ", self.account_info["money"],
+                                                                                                              "Your IP ", self.account_info["ipaddress"],
+                                                                                                              "Your netcoins ", self.account_info["netcoins"]), 
 
-                               "{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}".format("Your SDK ", self.account_info["sdk"],
-                                                                                                     "Your Firewall ", self.account_info["fw"],
-                                                                                                     "Your Antivirus ", self.account_info["av"],
-                                                                                                     "Your BruteForce ", self.account_info["brute"],
-                                                                                                     "Your level ", self.account_info["level"])]]
+                                   "{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}".format("Your SDK ", self.account_info["sdk"],
+                                                                                                         "Your Firewall ", self.account_info["fw"],
+                                                                                                         "Your Antivirus ", self.account_info["av"],
+                                                                                                         "Your BruteForce ", self.account_info["brute"],
+                                                                                                         "Your level ", self.account_info["level"])]]
+        except KeyError:
+          account_information = [["your account information", "update information"], ["Error", "Error"]]
         table1 = SingleTable(data)
         table2 = SingleTable(account_information)
 
@@ -227,20 +230,13 @@ class Utils:
                     try:
                         while True:
                             ch = sys.stdin.read(1)
-                            if ch in "m":
+                            s = input()
+                            if s is "m":
                               sys.stdout.write("\nyour money...")
                             else:
                               sys.stdout.write(ch)
                     except (KeyboardInterrupt, EOFError):
                         pass
-                try:
-                    stdin = sys.stdin.read()
-                    if "cmd" in stdin:
-                       print("\ncmd entering")
-                       time.sleep(2)
-                except IOError:
-                    pass
-                time.sleep(1)
         except:
            pass
 
@@ -404,6 +400,120 @@ class Utils:
         return t
 
     def requestString(self, php, **kwargs):
+        # print("Request: {}, {}".format(php, self.uID))
+        self.user_agent = self.generateUA("testtest")
+        try:
+            if kwargs["debug"] is True:
+                http_client.HTTPConnection.debuglevel = 0
+                # You must initialize logging, otherwise you'll not see debug output.
+                logging.basicConfig()
+                logger = logging.getLogger().setLevel(logging.DEBUG)
+                requests_log = logging.getLogger("requests.packages.urllib3")
+                requests_log.setLevel(logging.DEBUG)
+                requests_log.propagate = True
+                coloredlogs.install(level='DEBUG')
+                coloredlogs.install(level='DEBUG', logger=requests_log)
+
+        except KeyError:
+            kwargs["debug"] = self.debug
+            if kwargs["debug"] is True:
+                http_client.HTTPConnection.debuglevel = 0
+                # You must initialize logging, otherwise you'll not see debug output.
+                logging.basicConfig()
+                logger = logging.getLogger().setLevel(logging.DEBUG)
+                requests_log = logging.getLogger("requests.packages.urllib3")
+                requests_log.setLevel(logging.DEBUG)
+                requests_log.propagate = True
+                coloredlogs.install(level='DEBUG')
+                coloredlogs.install(level='DEBUG', logger=requests_log)
+
+        time.sleep(0.5)
+        i = 0
+        while True:
+            if i > 10:
+                exit(0)
+            if self.uID is None or self.accessToken is None or self.request is None and self.sync_mobile is False:
+                # connect login.
+                self.request = requests.Session()
+                self.request.headers.update({'User-agent': self.user_agent})
+                url_login = self.Login('login.php', self.username, self.password)
+                try:
+                    result = self.request.get(url_login, timeout=3, verify=False)
+                except requests.exceptions.ConnectTimeout:
+                    print("Request Timeout... TimeOut connection {}".format(php))
+                    exit(0)
+
+                except requests.exceptions.ConnectionError:
+                    print("Request Timeout... Connection Error '{}' with code: [{}]".format('login.php', url_login.status_code))
+                    exit(0)
+
+                result.encoding = 'UTF-8'
+                parseJson = result.json()
+
+                check_return_server = self.CheckServerError(parseJson)
+                if check_return_server is not None:
+                    return "Server Error: [{}] {}".format(check_return_server[0], check_return_server[1])
+                
+                self.accessToken = str(parseJson["accesstoken"])
+                self.uID = int(parseJson["uid"].encode("UTF-8"))
+                global login
+                self.login = "1"
+
+                self.generateConfiguration(self.uID, self.accessToken)
+                
+                # Create First request.
+                try:
+                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=3)
+                except requests.exceptions.ConnectTimeout:
+                    print("Request Timeout... TimeOut connection {}".format(php))
+                    exit(0)
+
+                except requests.exceptions.ConnectionError:
+                    print("Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
+                    exit(0)
+
+                if kwargs["debug"] is True:
+                    logging.info(result.json())
+
+                return result.json()
+
+            elif self.uID is not None or self.accessToken is not None:
+                #request = requests.Session()
+                if not self.request:
+                  self.request = requests.Session()
+
+                self.request.headers.update({'User-agent': self.user_agent})
+
+                if self.sync_mobile is True:
+                    if self.login is "0":
+                        self.login = "1"
+                        self.request.get(self.generateURL(self.uID, 'update.php', accesstoken=self.accessToken, lang="fr", lastread="0"), timeout=3)
+
+                # return just request don't login before.
+                try:
+                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=3)
+                except requests.exceptions.ConnectTimeout:
+                    print("Request Timeout... TimeOut connection {}".format(php))
+                    exit(0)
+
+                except requests.exceptions.ConnectionError:
+                    print("Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
+                    exit(0)
+
+
+                result.encoding = 'UTF-8'
+                parseJson = result.json()
+                try:
+                    self.accessToken = str(parseJson["accesstoken"])
+                except KeyError:
+                    pass
+
+            i = i + 1
+            if kwargs["debug"] is True:
+                logging.info(result.json())
+            return parseJson
+
+    def requestStringNowait(self, php, **kwargs):
         # print("Request: {}, {}".format(php, self.uID))
         self.user_agent = self.generateUA("testtest")
         try:
