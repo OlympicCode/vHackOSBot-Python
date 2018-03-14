@@ -55,7 +55,7 @@ class Network():
                 self.targetHack = self.ut.requestString("exploit.php", lang="fr", target=str(targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
                 if self.targetHack["result"] == "0":
                     self.targetHack = self.ut.requestString("remote.php", lang="fr", target=str(targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
-                    self.getBanking(self, targetNetwork)
+                    self.getBanking(targetNetwork)
                 elif self.targetHack["result"] == "2":
                     self.ut.viewsPrint("showMsgErrorSdk=0", "[{}] - don't possible to hack sdk exploit = 0 wait.".format(os.path.basename(os.path.basename(__file__))))
                     time.sleep(0.8)
