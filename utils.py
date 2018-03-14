@@ -26,11 +26,11 @@ from sys import stdout
 import re
 try:
     import fcntl
+    import termios
     windows = False
 except:
     windows = True
 import time
-import termios
 import contextlib
 
 #logger = logging.getLogger(__name__)
@@ -40,14 +40,15 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 @contextlib.contextmanager
 def raw_mode(file):
-    old_attrs = termios.tcgetattr(file.fileno())
-    new_attrs = old_attrs[:]
-    new_attrs[3] = new_attrs[3] & ~(termios.ECHO | termios.ICANON)
-    try:
-        termios.tcsetattr(file.fileno(), termios.TCSADRAIN, new_attrs)
-        yield
-    finally:
-        termios.tcsetattr(file.fileno(), termios.TCSADRAIN, old_attrs)
+    if windows is False:
+        old_attrs = termios.tcgetattr(file.fileno())
+        new_attrs = old_attrs[:]
+        new_attrs[3] = new_attrs[3] & ~(termios.ECHO | termios.ICANON)
+        try:
+            termios.tcsetattr(file.fileno(), termios.TCSADRAIN, new_attrs)
+            yield
+        finally:
+            termios.tcsetattr(file.fileno(), termios.TCSADRAIN, old_attrs)
 
 def set_default(obj):
     if isinstance(obj, set):
@@ -234,7 +235,7 @@ class Utils:
         try:
             print(table1.table)
             print(table2.table)
-            if windows == False:
+            if windows is False:
                 sys.stdout.write("\nCMD: [m] Get Money \nWaiting for user input : ")
                 with raw_mode(sys.stdin):
                     try:
