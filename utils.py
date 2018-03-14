@@ -220,7 +220,10 @@ class Utils:
         else:
             os.system('cls')
 
-        # for windows Try to print tables else pass
+
+        req_version = (3,0)
+        cur_version = sys.version_info
+        # for windows Try to print tables else pass python 2
         try:
             print(table1.table)
             print(table2.table)
@@ -228,18 +231,23 @@ class Utils:
                 sys.stdout.write("\nCMD: [m] Get Money \nWaiting for user input : ")
                 with raw_mode(sys.stdin):
                     try:
+                      if cur_version <= req_version:
                         while True:
                             ch = sys.stdin.read(1)
-                            s = input()
-                            if s is "m":
+                            if ch in "m":
                               sys.stdout.write("\nyour money...")
-                            else:
-                              sys.stdout.write(ch)
+                              time.sleep(0.3)
+                      else:
+                        while True:
+                            ch = sys.stdin.read(1)
+                            if str(ch) == "m":
+                              sys.stdout.write("\nyour money...")
+                              time.sleep(0.3)
+                            break
                     except (KeyboardInterrupt, EOFError):
                         pass
-        except:
-           pass
-
+        except IOError as e:
+          pass
 
     def getPlatform(self):
         return self.platform
@@ -427,7 +435,7 @@ class Utils:
                 coloredlogs.install(level='DEBUG')
                 coloredlogs.install(level='DEBUG', logger=requests_log)
 
-        time.sleep(0.5)
+        time.sleep(0.2)
         i = 0
         while True:
             if i > 10:
@@ -541,7 +549,6 @@ class Utils:
                 coloredlogs.install(level='DEBUG')
                 coloredlogs.install(level='DEBUG', logger=requests_log)
 
-        time.sleep(0.5)
         i = 0
         while True:
             if i > 10:
