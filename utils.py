@@ -179,6 +179,12 @@ class Utils:
               else:
                 return self.OutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), self.printConsole(Msg)), 2)
 
+    def exploit(self):
+        try:
+            return self.exploits
+        except:
+            return 0
+
     def OutputTable(self, msg, select_tables):
       if self.numberLoop < 6:
           self.numberLoop = self.numberLoop + 1
@@ -197,6 +203,7 @@ class Utils:
       elif select_tables == 2:
         self.account_info = self.requestStringNowait("update.php", uID=self.uID, accesstoken=self.accessToken)
         try:
+            self.exploits = int(self.account_info["exploits"])
             account_information = [["your account information", "update information"], 
                                    ["{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}\n{10}: {11}".format("Your exploits ", self.account_info["exploits"],
                                                                                                               "Your spam ", self.account_info["spam"],
@@ -293,7 +300,7 @@ class Utils:
                 exit(0)
 
             except requests.exceptions.ConnectionError:
-                print("Request Timeout... Connection Error '{}' with code: [{}]".format(url, url_login.status_code))
+                print("Request Timeout... Connection Error '{}'".format(url))
                 exit(0)
 
             result.encoding = 'UTF-8'

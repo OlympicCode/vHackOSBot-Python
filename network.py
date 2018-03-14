@@ -1,5 +1,5 @@
 from utils import Utils
-import os
+import os, time
 
 class Network():
     def __init__(self, ut):
@@ -24,6 +24,8 @@ class Network():
            return []
 
     def attackTarget(self):
+        your_exploit = self.ut.exploit()
+        
         list_ip_exist = set()
         list_ip_dontexist = set()
         if len(self.getListBruteforce()) > 0:
@@ -43,27 +45,30 @@ class Network():
         list_ip_dontexist = set(list_ip_exist)^set(list_ip_dontexist)
         
         self.ut.viewsPrint("showMsgTotalBruteForceInfo", "[{}] - Total Target Bruteforced ({}), and try to ({}) not bruteforced".format(os.path.basename(__file__), len(list_ip_exist), len(list_ip_dontexist)))
-
-        # scan don't exist ip in bruteforce list
-        for target in list_ip_dontexist:
-            self.targetHack = self.ut.requestString("exploit.php", target=str(target), accesstoken=self.Configuration["accessToken"])
-            self.targetHack = self.ut.requestString("remote.php", target=str(target), accesstoken=self.Configuration["accessToken"])
-            self.getBanking(str(target))
-
+        
+        if your_exploit > 0:
+            # scan don't exist ip in bruteforce list
+            for target in list_ip_dontexist:
+                self.targetHack = self.ut.requestString("exploit.php", target=str(target), accesstoken=self.Configuration["accessToken"])
+                self.targetHack = self.ut.requestString("remote.php", target=str(target), accesstoken=self.Configuration["accessToken"])
+                self.getBanking(str(target))
+        
         # get money to bruteforce list
         for target in list_ip_exist:
             s1 = self.targetHack = self.ut.requestString("exploit.php", target=str(target), accesstoken=self.Configuration["accessToken"])
             s2 = self.targetHack = self.ut.requestString("remote.php", target=str(target), accesstoken=self.Configuration["accessToken"])
             self.getBanking(str(target))
 
-        # search new user bruteforce and start bruteforce.
-        for targetNetwork in self.getListNetwork("ips"):
-            self.targetHack = self.ut.requestString("exploit.php", target=str(targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
-            if self.targetHack["result"] == "0":
-                self.targetHack = self.ut.requestString("remote.php", target=str(targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
-            elif self.targetHack["result"] == "2":
-                self.ut.viewsPrint("showMsgErrorSdk=0", "[{}] - don't possible to hack sdk exploit = 0".format(os.path.basename(os.path.basename(__file__))))
-                break
+        if your_exploit > 0:
+            # search new user bruteforce and start bruteforce.
+            for targetNetwork in self.getListNetwork("ips"):
+                self.targetHack = self.ut.requestString("exploit.php", target=str(targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
+                if self.targetHack["result"] == "0":
+                    self.targetHack = self.ut.requestString("remote.php", target=str(targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
+                elif self.targetHack["result"] == "2":
+                    self.ut.viewsPrint("showMsgErrorSdk=0", "[{}] - don't possible to hack sdk exploit = 0 wait.".format(os.path.basename(os.path.basename(__file__))))
+                    time.sleep(1)
+
 
     def getBanking(self, ip):
         reqBanking = self.ut.requestString("remotebanking.php", target=ip, accesstoken=self.Configuration["accessToken"])
