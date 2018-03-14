@@ -213,11 +213,11 @@ class Utils:
                                                                                                               "Your IP ", self.account_info["ipaddress"],
                                                                                                               "Your netcoins ", self.account_info["netcoins"]), 
 
-                                   "{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}".format("Your SDK ", self.account_info["sdk"],
+                                   "{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}, XP({10}%)".format("Your SDK ", self.account_info["sdk"],
                                                                                                          "Your Firewall ", self.account_info["fw"],
                                                                                                          "Your Antivirus ", self.account_info["av"],
                                                                                                          "Your BruteForce ", self.account_info["brute"],
-                                                                                                         "Your level ", self.account_info["level"])]]
+                                                                                                         "Your level ", self.account_info["level"], round((int(self.account_info["exp"])/int(self.account_info["expreq"]))*100, 1) )]]
         except KeyError:
           account_information = [["your account information", "update information"], ["Error", "Error"]]
         table1 = SingleTable(data)
@@ -242,7 +242,7 @@ class Utils:
                       if cur_version <= req_version:
                         while True:
                             ch = sys.stdin.read(1)
-                            if ch in "m":
+                            if ch == "m":
                               sys.stdout.write("\nyour money...")
                               time.sleep(0.3)
                       else:
