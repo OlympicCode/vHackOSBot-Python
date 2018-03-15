@@ -32,8 +32,8 @@ class Network():
         except:
             list_ip_exist = []
             list_ip_dontexist = []
-            
-        list_ip_dontexist = set(list_ip_exist)^set(list_ip_dontexist)
+
+        list_ip_dontexist = list_ip_exist | list_ip_dontexist
         
         self.ut.viewsPrint("showMsgTotalBruteForceInfo", "[{}] - Total Target Bruteforced ({}), and try to ({}) not bruteforced".format(os.path.basename(__file__), len(list_ip_exist), len(list_ip_dontexist)))
         
@@ -64,7 +64,7 @@ class Network():
                     self.ut.viewsPrint("showMsgErrorSdk=0", "[{}] - don't possible to hack sdk exploit = 0 wait.".format(os.path.basename(os.path.basename(__file__))))
                     time.sleep(0.8)
 
-        yourbank = self.ut.requestString("banking.php", target=str(targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
+        yourbank = self.ut.requestString("banking.php", target=str(self.targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
         whitelist = set()
         for info in yourbank["transactions"]:
             if int(info["to_id"]) == self.Configuration["uID"]:
@@ -95,8 +95,6 @@ class Network():
                 self.bruteForceBanking(ip)
 
   
-
-
     def bruteForceBanking(self, ip):
         reqBruteForcebanking = self.ut.requestString("startbruteforce.php", target=ip, accesstoken=self.Configuration["accessToken"])
         try:
