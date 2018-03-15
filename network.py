@@ -15,21 +15,24 @@ class Network():
         self.targetBruted = self.ut.requestString("tasks.php", accesstoken=self.Configuration["accessToken"])
         time.sleep(0.3)
         self.network = self.ut.requestString("network.php", accesstoken=self.Configuration["accessToken"])
-
-        if len(self.targetBruted["brutes"]) > 0:
-            for targetBrute in self.targetBruted["brutes"]:
-               for targetNetwork in self.network["cm"]:
-                  if targetBrute["user_ip"] == targetNetwork["ip"]:
-                      list_ip_exist.add(targetBrute["user_ip"])
-                  else:
-                      list_ip_dontexist.add(targetNetwork["ip"])
-        else:
-            try:
-                for targetNetwork in self.network["ips"]:
-                    list_ip_dontexist.add(targetNetwork["ip"])
-            except:
-                self.ut.viewsPrint("showMsgBlockBruteForceInfoList", "[{}] - weird, you are not list player attack... :(".format(os.path.basename(__file__), len(list_ip_exist), len(list_ip_dontexist)))
-
+        try:
+            if len(self.targetBruted["brutes"]) > 0:
+                for targetBrute in self.targetBruted["brutes"]:
+                   for targetNetwork in self.network["cm"]:
+                      if targetBrute["user_ip"] == targetNetwork["ip"]:
+                          list_ip_exist.add(targetBrute["user_ip"])
+                      else:
+                          list_ip_dontexist.add(targetNetwork["ip"])
+            else:
+                try:
+                    for targetNetwork in self.network["ips"]:
+                        list_ip_dontexist.add(targetNetwork["ip"])
+                except:
+                    self.ut.viewsPrint("showMsgBlockBruteForceInfoList", "[{}] - weird, you are not list player attack... :(".format(os.path.basename(__file__), len(list_ip_exist), len(list_ip_dontexist)))
+        except:
+            list_ip_exist = []
+            list_ip_dontexist = []
+            
         list_ip_dontexist = set(list_ip_exist)^set(list_ip_dontexist)
         
         self.ut.viewsPrint("showMsgTotalBruteForceInfo", "[{}] - Total Target Bruteforced ({}), and try to ({}) not bruteforced".format(os.path.basename(__file__), len(list_ip_exist), len(list_ip_dontexist)))
