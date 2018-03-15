@@ -202,9 +202,10 @@ class Utils:
         print(table.table)
 
       elif select_tables == 2:
-        self.account_info = self.requestStringNowait("update.php", uID=self.uID, accesstoken=self.accessToken)
         try:
+            self.account_info = self.requestStringNowait("update.php", uID=self.uID, accesstoken=self.accessToken)
             self.exploits = int(self.account_info["exploits"])
+            progress = round(int(self.account_info["exp"]))/round(int(self.account_info["expreq"]))
             account_information = [["your account information", "update information"], 
                                    ["{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}\n{10}: {11}".format("Your exploits ", self.account_info["exploits"],
                                                                                                               "Your spam ", self.account_info["spam"],
@@ -213,11 +214,11 @@ class Utils:
                                                                                                               "Your IP ", self.account_info["ipaddress"],
                                                                                                               "Your netcoins ", self.account_info["netcoins"]), 
 
-                                   "{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}, XP({10}%)".format("Your SDK ", self.account_info["sdk"],
+                                   "{}: {}\n{}: {}\n{}: {}\n{}: {}\n{}: {}, XP({}%)".format("Your SDK ", self.account_info["sdk"],
                                                                                                          "Your Firewall ", self.account_info["fw"],
                                                                                                          "Your Antivirus ", self.account_info["av"],
                                                                                                          "Your BruteForce ", self.account_info["brute"],
-                                                                                                         "Your level ", self.account_info["level"], round((int(self.account_info["exp"])/int(self.account_info["expreq"]))*100, 1) )]]
+                                                                                                         "Your level ", self.account_info["level"], round(progress*100, 1))]]
         except KeyError:
           account_information = [["your account information", "update information"], ["Error", "Error"]]
         table1 = SingleTable(data)
@@ -516,9 +517,13 @@ class Utils:
                     print("Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
                     exit(0)
 
-
                 result.encoding = 'UTF-8'
-                parseJson = result.json()
+                try:
+                    parseJson = result.json()
+                except ValueError:
+                    print("Sorry, bot close for bad request...")
+                    exit(0)
+
                 try:
                     self.accessToken = str(parseJson["accesstoken"])
                 except KeyError:

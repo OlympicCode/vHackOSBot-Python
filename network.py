@@ -13,6 +13,7 @@ class Network():
         list_ip_exist = set()
         list_ip_dontexist = set()
         self.targetBruted = self.ut.requestString("tasks.php", accesstoken=self.Configuration["accessToken"])
+        time.sleep(0.3)
         self.network = self.ut.requestString("network.php", accesstoken=self.Configuration["accessToken"])
 
         if len(self.targetBruted["brutes"]) > 0:
@@ -37,14 +38,14 @@ class Network():
             # scan don't exist ip in bruteforce list
             for target in list_ip_dontexist:
                 #s1 = self.targetHack = self.ut.requestString("exploit.php", target=str(target), accesstoken=self.Configuration["accessToken"])
-                #s2 = self.targetHack = self.ut.requestString("remote.php", target=str(target), accesstoken=self.Configuration["accessToken"])
+                s2 = self.targetHack = self.ut.requestString("remote.php", target=str(target), accesstoken=self.Configuration["accessToken"])
                 time.sleep(0.2)
                 self.getBanking(str(target))
         
         # get money to bruteforce list
         for target in list_ip_exist:
             #s1 = self.targetHack = self.ut.requestString("exploit.php", target=str(target), accesstoken=self.Configuration["accessToken"])
-            #s2 = self.targetHack = self.ut.requestString("remote.php", target=str(target), accesstoken=self.Configuration["accessToken"])
+            s2 = self.targetHack = self.ut.requestString("remote.php", target=str(target), accesstoken=self.Configuration["accessToken"])
             time.sleep(0.2)
             self.getBanking(str(target))
 
