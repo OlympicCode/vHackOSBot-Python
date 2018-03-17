@@ -7,9 +7,9 @@ class Network():
         self.Configuration = self.ut.readConfiguration()
         self.targetBruted = self.ut.requestString("tasks.php", accesstoken=self.Configuration["accessToken"])
         self.network = self.ut.requestString("network.php", accesstoken=self.Configuration["accessToken"])
-        self.attackTarget()
+        self.attackTarget(self.Configuration["attack_mode"])
 
-    def attackTarget(self):
+    def attackTarget(self, mode):
         your_exploit = self.ut.exploit()
         
         list_ip_exist = set()
@@ -36,52 +36,47 @@ class Network():
         
         self.ut.viewsPrint("showMsgTotalBruteForceInfo", "[{}] - Total Target Bruteforced ({}), and try to ({}) not bruteforced".format(os.path.basename(__file__), len(list_ip_exist), len(list_ip_dontexist)))
         
-        if your_exploit > 0:
-            # scan don't exist ip in bruteforce list
-            for target in list_ip_dontexist:
-                s1 = self.targetHack = self.ut.requestString("exploit.php", target=str(target), accesstoken=self.Configuration["accessToken"])
-                s2 = self.targetHack = self.ut.requestString("remote.php", target=str(target), accesstoken=self.Configuration["accessToken"])
-                self.ut.viewsPrint("showAttacktarget", "[{}] - attack to '{}'".format(os.path.basename(os.path.basename(__file__)), target))
-                self.getBanking(str(target))
-        
-        # get money to bruteforce list
-        if int(your_exploit) > 0:
-            for target in list_ip_exist:
-                s1 = self.targetHack = self.ut.requestString("exploit.php", target=str(target), accesstoken=self.Configuration["accessToken"])
-                s2 = self.targetHack = self.ut.requestString("remote.php", target=str(target), accesstoken=self.Configuration["accessToken"])
-                self.ut.viewsPrint("showAttacktarget", "[{}] - attack to '{}'".format(os.path.basename(os.path.basename(__file__)), target))
-                self.getBanking(str(target))
-
-        self.network = self.ut.requestString("network.php", accesstoken=self.Configuration["accessToken"])
-        if int(your_exploit) > 0:
-            # search new user bruteforce and start bruteforce.
-            for targetNetwork in self.network["ips"]:
-                self.targetHack = self.ut.requestString("exploit.php", lang="fr", target=str(targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
-                if self.targetHack["result"] == "0":
-                    self.ut.viewsPrint("showAttacktarget", "[{}] - attack to '{}'".format(os.path.basename(os.path.basename(__file__)), str(targetNetwork["ip"])))
-                    self.targetHack = self.ut.requestString("remote.php", lang="fr", target=str(targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
-                    self.getBanking(targetNetwork)
-                elif self.targetHack["result"] == "2":
-                    self.ut.viewsPrint("showMsgErrorSdk=0", "[{}] - don't possible to hack sdk exploit = 0 wait.".format(os.path.basename(os.path.basename(__file__))))
-        else:
-            self.ut.viewsPrint("showMsgErrorSdk=0", "[{}] - don't possible to hack sdk exploit = 0 wait.".format(os.path.basename(os.path.basename(__file__))))
-
-
-        yourbank = self.ut.requestString("banking.php", lang="fr", accesstoken=self.Configuration["accessToken"])
-        whitelist = set()
-        for info in yourbank["transactions"]:
-            if int(info["to_id"]) == self.Configuration["uID"]:
-                whitelist.add(info["from_ip"])
-          
-        '''for target in whitelist:
-            self.ut.viewsPrint("showbanquinuser", "[{}] - Hack target from bank '{}'".format(os.path.basename(os.path.basename(__file__)), target))
-            s2 = self.targetHack = self.ut.requestString("remote.php", target=str(target), accesstoken=self.Configuration["accessToken"])
-            try:
-                if s2["result"] is not None and s2["withdraw"] > 0:
+            
+        if mode == "ip_list":
+            # get money to bruteforce list
+            if int(your_exploit) > 0:
+                for target in list_ip_exist:
+                    s1 = self.targetHack = self.ut.requestString("exploit.php", target=str(target), accesstoken=self.Configuration["accessToken"])
+                    s2 = self.targetHack = self.ut.requestString("remote.php", target=str(target), accesstoken=self.Configuration["accessToken"])
+                    self.ut.viewsPrint("showAttacktarget", "[{}] - attack to '{}'".format(os.path.basename(os.path.basename(__file__)), target))
                     self.getBanking(str(target))
-            except:
-                pass
-            time.sleep(0.5)'''
+
+
+        if mode == "new":
+            self.network = self.ut.requestString("network.php", accesstoken=self.Configuration["accessToken"])
+            if int(your_exploit) > 0:
+                # search new user bruteforce and start bruteforce.
+                for targetNetwork in self.network["ips"]:
+                    self.targetHack = self.ut.requestString("exploit.php", lang="fr", target=str(targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
+                    if self.targetHack["result"] == "0":
+                        self.ut.viewsPrint("showAttacktarget", "[{}] - attack to '{}'".format(os.path.basename(os.path.basename(__file__)), str(targetNetwork["ip"])))
+                        self.targetHack = self.ut.requestString("remote.php", lang="fr", target=str(targetNetwork["ip"]), accesstoken=self.Configuration["accessToken"])
+                        self.getBanking(targetNetwork)
+                    elif self.targetHack["result"] == "2":
+                        self.ut.viewsPrint("showMsgErrorSdk=0", "[{}] - don't possible to hack sdk exploit = 0 wait.".format(os.path.basename(os.path.basename(__file__))))
+            else:
+                self.ut.viewsPrint("showMsgErrorSdk=0", "[{}] - don't possible to hack sdk exploit = 0 wait.".format(os.path.basename(os.path.basename(__file__))))
+
+        if mode == "bank_scan":
+            yourbank = self.ut.requestString("banking.php", lang="fr", accesstoken=self.Configuration["accessToken"])
+            whitelist = set()
+            for info in yourbank["transactions"]:
+                if int(info["to_id"]) == self.Configuration["uID"]:
+                    whitelist.add(info["from_ip"])
+
+            for target in whitelist:
+                self.ut.viewsPrint("showbanquinuser", "[{}] - Hack target from bank '{}'".format(os.path.basename(os.path.basename(__file__)), target))
+                s2 = self.targetHack = self.ut.requestString("remote.php", target=str(target), accesstoken=self.Configuration["accessToken"])
+                try:
+                    if s2["result"] is not None and s2["withdraw"] > 0:
+                        self.getBanking(str(target))
+                except:
+                    pass
 
 
     def getBanking(self, ip):

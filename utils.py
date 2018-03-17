@@ -132,6 +132,7 @@ class Utils:
             self.debug = self.Configuration["debug"]
             self.show_info = self.Configuration["show_info"]
             self.sync_mobile = self.Configuration["sync_mobile"]
+            self.attack_mode = self.Configuration["attack_mode"]
         except KeyError as e:
             print("Error Configuration {}".format(e))
             exit(0)
@@ -276,7 +277,7 @@ class Utils:
         self.Configuration['debug'] = self.debug
         self.Configuration['show_info'] = self.show_info
         self.Configuration['sync_mobile'] = self.sync_mobile
-
+        self.Configuration['attack_mode'] = self.attack_mode
         # delete old file 
         #os.remove("config.yml")
         
@@ -523,7 +524,6 @@ class Utils:
                     parseJson = result.json()
                 except ValueError:
                     print("Sorry, bot close for bad request...")
-                    exit(0)
 
                 try:
                     self.accessToken = str(parseJson["accesstoken"])
