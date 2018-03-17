@@ -207,7 +207,7 @@ class Utils:
             self.exploits = int(self.account_info["exploits"])
             progress = round(int(self.account_info["exp"]))/round(int(self.account_info["expreq"]))
             account_information = [["your account information", "update information"], 
-                                   ["{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}\n{10}: {11}".format("Your exploits ", self.account_info["exploits"],
+                                   ["{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}\n{10}: {11}".format("Your exploits ", self.exploits,
                                                                                                               "Your spam ", self.account_info["spam"],
                                                                                                               "Your network speed ", self.account_info["inet"],
                                                                                                               "Your money ", self.account_info["money"],
@@ -221,9 +221,10 @@ class Utils:
                                                                                                          "Your level ", self.account_info["level"], round(progress*100, 1))]]
         except KeyError:
           account_information = [["your account information", "update information"], ["Error", "Error"]]
+          exit(0)
         table1 = SingleTable(data)
         table2 = SingleTable(account_information)
-
+        time.sleep(0.3)
         if self.platform  == "Linux":
             print("\033[H\033[J")
         else:
