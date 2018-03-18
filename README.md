@@ -1,10 +1,10 @@
 # vHackOSBOT 🤖
 
-A Bot for the VHackOS made in Python 🐍
+A Bot for the vHackOS made in Python 🐍
 
 ## Requirements
 
-* Python 2.7
+* Python 2.7/Python 3.x
 * Requests
 * Ruamel.yaml
 * coloredlogs
