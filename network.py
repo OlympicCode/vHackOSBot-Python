@@ -64,7 +64,6 @@ class Network():
                 bankingRemote = self.ut.requestString("remotebanking.php", target=ip, accesstoken=self.Configuration["accessToken"])
                 resultbanking = int(bankingRemote["result"])
                 passwordbanking = str(bankingRemote["remotepassword"])
-                self.ChangeLog(ip)
             else:
                 return self.ut.result(result="don't return 0 weird", code=2)
 
