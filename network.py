@@ -71,13 +71,13 @@ class Network():
             if passwordbanking == "":
                 reqBruteForce = self.ut.requestString("startbruteforce.php", target=ip, accesstoken=self.Configuration["accessToken"])
                 resultBruteforce = int(reqBruteForce["result"])
-                self.ChangeLog(ip)
             else:
                 return self.ut.result(result="don't return '' weird", code=3)
 
             # verify your command target
             if resultBruteforce == 0:
                 self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[32m{} '{}'\033[0m".format(os.path.basename(__file__), "\033[32mStart Bruteforce to", ip))
+                self.ChangeLog(ip)
                 time.sleep(0.5)
 
             # if result is return 2 you SDK level is == 0.
