@@ -40,7 +40,7 @@ class Network():
         resultLog = int(reqRemotelog["result"])
 
         if resultLog == 2:
-            self.ut.viewsPrint("showMsgWriteLog", "[{}] - \033[34m Write log '{}' to '{}'\033[0m".format(os.path.basename(__file__), self.Configuration["msgLog"], PlayerBruteIP))
+            self.ut.viewsPrint("showMsgWriteLog", "[{}] - \033[34m Write log '{}' to '{}'\033[0m".format(os.path.basename(__file__), self.Configuration["msgLog"], ip))
 
 
     def AttackTarget(self, ip):
