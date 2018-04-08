@@ -324,7 +324,7 @@ class Utils:
             if check_return_server is not None:
                 return "Server Error: [{}] {}".format(check_return_server[0], check_return_server[1])
 
-            self.accessToken = str(parseJson["accessToken"])
+            self.accessToken = str(parseJson["accesstoken"])
             self.uID = int(parseJson["uid"].encode("UTF-8"))
 
             self.Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
