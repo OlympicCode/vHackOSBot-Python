@@ -16,17 +16,17 @@ class Update():
         money = self.store["money"]
         p = Player(self.ut)
 
-        
-        # get applications and update this
-        for applications in self.store["apps"]:
-            getTask = self.ut.requestString("tasks.php",
-                                            accesstoken=self.Configuration["accessToken"])
-            try:
-            	update = len(getTask["updates"])
-            except KeyError:
-            	update = 0
+        getTask = self.ut.requestString("tasks.php", accesstoken=self.Configuration["accessToken"])
 
-            if update < 10:
+        try:
+            update = len(getTask["updates"])
+        except KeyError:
+            update = 0
+
+        # get applications and update this
+        for count_update, applications in enumerate(self.store["apps"]):
+
+            if count_update+update < 10:
                 Appid = int(applications["appid"])
                 for list_update in self.Configuration["update"]:
                     time.sleep(0.3)
@@ -34,11 +34,12 @@ class Update():
                     if Appid == application_update:
                         if money >= applications["price"]:
                             result = self.ut.requestString("store.php",
-                                                               accesstoken=self.Configuration["accessToken"],
-                                                               appcode=application_update,
-                                                               action="100")
-                            self.ut.viewsPrint("showMsgUpdate", "[{}] - Update for your {} +1".format(os.path.basename(__file__), list_update))
-                            time.sleep(0.5)
+                                                            accesstoken=self.Configuration["accessToken"],
+                                                            appcode=application_update,
+                                                            action="100")
+                            if result['result'] == '0':
+                                self.ut.viewsPrint("showMsgUpdate", "[{}] - Update for your {} +1".format(os.path.basename(__file__), list_update))
+                                time.sleep(0.5)
                         else:
                             self.ut.viewsPrint("showMsgUpdate", "[{}] - you have not money to upgrade {}".format(os.path.basename(__file__), list_update))
                             time.sleep(0.5)
