@@ -18,15 +18,15 @@ class Update():
 
         getTask = self.ut.requestString("tasks.php", accesstoken=self.Configuration["accessToken"])
 
-        try:
-            update = len(getTask["updates"])
-        except KeyError:
-            update = 0
+        if 'updateCount' in getTask.keys():
+        	update = int(getTask['updateCount'])
+        else:
+        	update = 0
 
         # get applications and update this
         for count_update, applications in enumerate(self.store["apps"]):
-
-            if count_update+update < 10:
+            # update application
+            if count_update+update < 9:
                 Appid = int(applications["appid"])
                 for list_update in self.Configuration["update"]:
                     time.sleep(0.3)
@@ -47,5 +47,18 @@ class Update():
             	self.ut.viewsPrint("showMsgUpdatefull", "[{}] - full task used please wait.".format(os.path.basename(__file__)))
             	time.sleep(0.5)
             	return False
+            
+            # install application if level required < level
+
+            if int(applications["require"]) <= int(self.store["level"]) and 'baseprice' in self.store["apps"]:
+            	result = self.ut.requestString("store.php",
+                                                accesstoken=self.Configuration["accessToken"],
+                                                appcode=applications["appid"],
+                                                action="200")
+                self.ut.viewsPrint("showMsgInstalleApp", "[{}] - Installed new application.".format(os.path.basename(__file__)))
+
+
+
+
 
 
