@@ -13,15 +13,15 @@ class Update():
     def startFunctionUpdate(self):
 
         # get money info
-        money = self.store["money"]
+        money = int(self.store["money"])
         p = Player(self.ut)
 
         getTask = self.ut.requestString("tasks.php", accesstoken=self.Configuration["accessToken"])
 
         if 'updateCount' in getTask.keys():
-        	update = int(getTask['updateCount'])
+            update = int(getTask['updateCount'])
         else:
-        	update = 0
+            update = 0
 
         # get applications and update this
         for count_update, applications in enumerate(self.store["apps"]):
@@ -32,11 +32,12 @@ class Update():
                     time.sleep(0.3)
                     application_update = int(p.getHelperApplication()[list_update]["appid"])
                     if Appid == application_update:
-                        if money >= applications["price"]:
+                        if money >= int(applications["price"]):
                             result = self.ut.requestString("store.php",
                                                             accesstoken=self.Configuration["accessToken"],
                                                             appcode=application_update,
                                                             action="100")
+                            money = money - int(applications["price"])
                             if result['result'] == '0':
                                 self.ut.viewsPrint("showMsgUpdate", "[{}] - Update for your {} +1".format(os.path.basename(__file__), list_update))
                                 time.sleep(0.5)
@@ -44,14 +45,14 @@ class Update():
                             self.ut.viewsPrint("showMsgUpdate", "[{}] - you have not money to upgrade {}".format(os.path.basename(__file__), list_update))
                             time.sleep(0.5)
             else:
-            	self.ut.viewsPrint("showMsgUpdatefull", "[{}] - full task used please wait.".format(os.path.basename(__file__)))
-            	time.sleep(0.5)
-            	return False
+                self.ut.viewsPrint("showMsgUpdatefull", "[{}] - full task used please wait.".format(os.path.basename(__file__)))
+                time.sleep(0.5)
+                return False
             
             # install application if level required < level
 
             if int(applications["require"]) <= int(self.store["level"]) and 'baseprice' not in self.store["apps"]:
-            	result = self.ut.requestString("store.php",
+                result = self.ut.requestString("store.php",
                                                 accesstoken=self.Configuration["accessToken"],
                                                 appcode=applications["appid"],
                                                 action="200")
