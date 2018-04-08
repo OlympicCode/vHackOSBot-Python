@@ -308,7 +308,7 @@ class Utils:
             url_login = self.Login(url, self.username, self.password)
 
             try:
-                result = self.request.get(url_login, timeout=3, verify=False)
+                result = self.request.get(url_login, timeout=5, verify=False)
             except requests.exceptions.ConnectTimeout:
                 print("Request Timeout... TimeOut connection '{}'".format(url))
                 exit(0)
@@ -324,7 +324,7 @@ class Utils:
             if check_return_server is not None:
                 return "Server Error: [{}] {}".format(check_return_server[0], check_return_server[1])
 
-            self.accessToken = str(parseJson["accesstoken"])
+            self.accessToken = str(parseJson["accessToken"])
             self.uID = int(parseJson["uid"].encode("UTF-8"))
 
             self.Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
@@ -467,7 +467,7 @@ class Utils:
                 self.request.headers.update({'User-agent': self.user_agent})
                 url_login = self.Login('login.php', self.username, self.password)
                 try:
-                    result = self.request.get(url_login, timeout=3, verify=False)
+                    result = self.request.get(url_login, timeout=5, verify=False)
                 except requests.exceptions.ConnectTimeout:
                     print("Request Timeout... TimeOut connection {}".format(php))
                     exit(0)
@@ -492,7 +492,7 @@ class Utils:
                 
                 # Create First request.
                 try:
-                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=3)
+                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
                 except requests.exceptions.ConnectTimeout:
                     print("Request Timeout... TimeOut connection {}".format(php))
                     exit(0)
@@ -520,7 +520,7 @@ class Utils:
 
                 # return just request don't login before.
                 try:
-                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=3)
+                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
                 except requests.exceptions.ConnectTimeout:
                     print("Request Timeout... TimeOut connection {}".format(php))
                     exit(0)
@@ -609,7 +609,7 @@ class Utils:
                 
                 # Create First request.
                 try:
-                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=3)
+                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
                 except requests.exceptions.ConnectTimeout:
                     print("Request Timeout... TimeOut connection {}".format(php))
                     exit(0)
@@ -637,7 +637,7 @@ class Utils:
 
                 # return just request don't login before.
                 try:
-                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=3)
+                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
                 except requests.exceptions.ConnectTimeout:
                     print("Request Timeout... TimeOut connection {}".format(php))
                     exit(0)
