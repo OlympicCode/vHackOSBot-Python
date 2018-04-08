@@ -17,3 +17,4 @@ attack_mode: bank_scan
 
 uID:  # <- Automatical uID for your account don't change /!\
 accessToken: # <- Automatical accessToken for your account don't change /!\
+update: ["SDK", "FW"]
