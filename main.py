@@ -1,3 +1,4 @@
+from update import Update
 from network import Network
 from utils import Utils
 import sys
@@ -9,6 +10,7 @@ except:
 
 class run():
     def __init__(self, ut):
+        update = Update(ut)
         network = Network(ut)
 
 if __name__ == '__main__':

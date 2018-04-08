@@ -133,6 +133,7 @@ class Utils:
             self.show_info = self.Configuration["show_info"]
             self.sync_mobile = self.Configuration["sync_mobile"]
             self.attack_mode = self.Configuration["attack_mode"]
+            self.update = self.Configuration["update"]
         except KeyError as e:
             print("Error Configuration {}".format(e))
             exit(0)
@@ -188,6 +189,9 @@ class Utils:
             return self.exploits
         except:
             return 0
+
+    def account(self):
+      return self.requestStringNowait("update.php", uID=self.uID, accesstoken=self.accessToken)
 
     def OutputTable(self, msg, select_tables):
       if self.numberLoop < 6:
@@ -280,6 +284,7 @@ class Utils:
         self.Configuration['show_info'] = self.show_info
         self.Configuration['sync_mobile'] = self.sync_mobile
         self.Configuration['attack_mode'] = self.attack_mode
+        self.Configuration['update'] = self.update
         # delete old file 
         #os.remove("config.yml")
         
@@ -287,6 +292,7 @@ class Utils:
             self.Configuration['uID'] = uID
         except KeyError:
             self.Configuration['uID'] = self.uID
+
 
         try:
             self.Configuration['accessToken'] = accessToken
