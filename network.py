@@ -49,21 +49,28 @@ class Network():
                 # connect to the device
                 targetRemote = self.ut.requestString("remote.php", lang="en", target=ip, accesstoken=self.Configuration["accessToken"])
                 resultRemote = int(targetRemote["result"])
+            else:
+                return self.ut.result(result="don't return 0 weird", code=1)
 
-                # if result is good you are possibly launch bruteforce to get money.
-                if resultRemote == 0:
-                    bankingRemote = self.ut.requestString("remotebanking.php", target=ip, accesstoken=self.Configuration["accessToken"])
-                    resultbanking = int(bankingRemote["result"])
-                    passwordbanking = str(bankingRemote["remotepassword"])
+            # if result is good you are possibly launch bruteforce to get money.
+            if resultRemote == 0:
+                bankingRemote = self.ut.requestString("remotebanking.php", target=ip, accesstoken=self.Configuration["accessToken"])
+                resultbanking = int(bankingRemote["result"])
+                passwordbanking = str(bankingRemote["remotepassword"])
+            else:
+                return self.ut.result(result="don't return 0 weird", code=1)
 
-                    # if banque don't have password the banque not cracked ... start bruteforce
-                    if passwordbanking == "":
-                        reqBruteForce = self.ut.requestString("startbruteforce.php", target=ip, accesstoken=self.Configuration["accessToken"])
-                        resultBruteforce = int(reqBruteForce["result"])
+            # if banque don't have password the banque not cracked ... start bruteforce
+            if passwordbanking == "":
+                reqBruteForce = self.ut.requestString("startbruteforce.php", target=ip, accesstoken=self.Configuration["accessToken"])
+                resultBruteforce = int(reqBruteForce["result"])
+            else:
+                return self.ut.result(result="don't return '' weird", code=1)
 
-                        # verify your command target
-                        if resultBruteforce == 0:
-                            self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[32m{} '{}'\033[0m".format(os.path.basename(__file__), "\033[32mStart Bruteforce to", ip))
+            # verify your command target
+            if resultBruteforce == 0:
+                self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[32m{} '{}'\033[0m".format(os.path.basename(__file__), "\033[32mStart Bruteforce to", ip))
+                time.sleep(0.5)
 
             # if result is return 2 you SDK level is == 0.
             # don't possibly for you to hack wait time for
@@ -72,6 +79,7 @@ class Network():
                 pass
         else:
             self.ut.viewsPrint("showMsgErrorSdk=0", "[{}] - don't possible to hack sdk exploit = 0 wait.".format(os.path.basename(os.path.basename(__file__))))
+            time.sleep(0.5)
 
     def RecoltMoney(self):
         # collect information in bruteforce list.
@@ -89,6 +97,7 @@ class Network():
             if money > 0:
                 reqMoney = self.ut.requestString("remotebanking.php", target=PlayerBruteIP, accesstoken=self.Configuration["accessToken"], action="100", amount=money,  lang="en")
                 self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[32m{} {} to '{}'\033[0m".format(os.path.basename(__file__), "\033[32myou are collected +", money, PlayerBruteIP))
+                time.sleep(0.5)
             else:
                 self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[33m{} {} to '{}'\033[0m".format(os.path.basename(__file__), "money = 0 no possible to get money", money, PlayerBruteIP))
-                time.sleep(1)
+                time.sleep(0.5)

@@ -170,6 +170,8 @@ class Utils:
 
       if Configuration:
           return Configuration
+    def result(self, result, code):
+      self.viewsPrint("showResult", "Error: {} code: {}".format(result, code))
 
     def viewsPrint(self, condition, Msg):
       if condition in self.Configuration["show_info"] or "All" in self.Configuration["show_info"]:
