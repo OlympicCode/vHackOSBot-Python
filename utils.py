@@ -121,7 +121,7 @@ class Utils:
         self.platform = platform.system()
         self.request = None
         self.secret = "aeffI"
-        self.url = "https://api.vhack.cc/mobile/11/"
+        self.url = "https://api.vhack.cc/mobile/15/"
         self.Configuration = self.readConfiguration()
         self.numberLoop = 0
         self.account_info = None
@@ -524,10 +524,11 @@ class Utils:
                     parseJson = result.json()
                 except ValueError:
                     print("Sorry, bot close for bad request...")
+                    exit(0)
 
                 try:
                     self.accessToken = str(parseJson["accesstoken"])
-                except KeyError:
+                except (KeyError, UnboundLocalError):
                     pass
 
             i = i + 1
