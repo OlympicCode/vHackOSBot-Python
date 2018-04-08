@@ -35,6 +35,13 @@ class Network():
                 self.AttackTarget(ip)
         return True
 
+    def ChangeLog(self, ip):
+        reqRemotelog = self.ut.requestString("remotelog.php", target=ip, accesstoken=self.Configuration["accessToken"], action="100", log=self.Configuration["msgLog"])
+        resultLog = int(reqRemotelog["result"])
+
+        if resultLog == 2:
+            self.ut.viewsPrint("showMsgWriteLog", "[{}] - \033[34m Write log '{}' to '{}'\033[0m".format(os.path.basename(__file__), self.Configuration["msgLog"], PlayerBruteIP))
+
 
     def AttackTarget(self, ip):
         your_exploit = self.ut.exploit()
@@ -57,6 +64,7 @@ class Network():
                 bankingRemote = self.ut.requestString("remotebanking.php", target=ip, accesstoken=self.Configuration["accessToken"])
                 resultbanking = int(bankingRemote["result"])
                 passwordbanking = str(bankingRemote["remotepassword"])
+                self.ChangeLog(ip)
             else:
                 return self.ut.result(result="don't return 0 weird", code=2)
 
@@ -64,6 +72,7 @@ class Network():
             if passwordbanking == "":
                 reqBruteForce = self.ut.requestString("startbruteforce.php", target=ip, accesstoken=self.Configuration["accessToken"])
                 resultBruteforce = int(reqBruteForce["result"])
+                self.ChangeLog(ip)
             else:
                 return self.ut.result(result="don't return '' weird", code=3)
 
@@ -101,12 +110,7 @@ class Network():
                 reqMoney = self.ut.requestString("remotebanking.php", target=PlayerBruteIP, accesstoken=self.Configuration["accessToken"], action="100", amount=money,  lang="en")
                 self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[32m{} {} to '{}'\033[0m".format(os.path.basename(__file__), "\033[32myou are collected +", money, PlayerBruteIP))
                 time.sleep(0.5)
-                reqRemotelog = self.ut.requestString("remotelog.php", target=PlayerBruteIP, accesstoken=self.Configuration["accessToken"], action="100", log=self.Configuration["msgLog"])
-                resultLog = int(reqRemotelog["result"])
-
-                if resultLog == 2:
-                    self.ut.viewsPrint("showMsgWriteLog", "[{}] - \033[34m Write log '{}' to '{}'\033[0m".format(os.path.basename(__file__), self.Configuration["msgLog"], PlayerBruteIP))
-
+                self.ChangeLog(PlayerBruteIP)
             else:
                 self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[33m{} {} to '{}'\033[0m".format(os.path.basename(__file__), "money = 0 no possible to get money", money, PlayerBruteIP))
                 time.sleep(0.5)
