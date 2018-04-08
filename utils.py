@@ -134,6 +134,7 @@ class Utils:
             self.sync_mobile = self.Configuration["sync_mobile"]
             self.attack_mode = self.Configuration["attack_mode"]
             self.update = self.Configuration["update"]
+            self.msgremotelog = self.Configuration["msgLog"]
         except KeyError as e:
             print("Error Configuration {}".format(e))
             exit(0)
@@ -285,6 +286,7 @@ class Utils:
         self.Configuration['sync_mobile'] = self.sync_mobile
         self.Configuration['attack_mode'] = self.attack_mode
         self.Configuration['update'] = self.update
+        self.Configuration["msgLog"] = self.msgremotelog
         # delete old file 
         #os.remove("config.yml")
         
