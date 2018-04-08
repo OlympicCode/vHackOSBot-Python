@@ -21,7 +21,12 @@ class Update():
         for applications in self.store["apps"]:
             getTask = self.ut.requestString("tasks.php",
                                             accesstoken=self.Configuration["accessToken"])
-            if len(getTask["updates"]) < 10:
+            try:
+            	update = len(getTask["updates"])
+            except KeyError:
+            	update = 0
+
+            if update < 10:
                 Appid = int(applications["appid"])
                 for list_update in self.Configuration["update"]:
                     time.sleep(0.3)
