@@ -58,14 +58,14 @@ class Network():
                 resultbanking = int(bankingRemote["result"])
                 passwordbanking = str(bankingRemote["remotepassword"])
             else:
-                return self.ut.result(result="don't return 0 weird", code=1)
+                return self.ut.result(result="don't return 0 weird", code=2)
 
             # if banque don't have password the banque not cracked ... start bruteforce
             if passwordbanking == "":
                 reqBruteForce = self.ut.requestString("startbruteforce.php", target=ip, accesstoken=self.Configuration["accessToken"])
                 resultBruteforce = int(reqBruteForce["result"])
             else:
-                return self.ut.result(result="don't return '' weird", code=1)
+                return self.ut.result(result="don't return '' weird", code=3)
 
             # verify your command target
             if resultBruteforce == 0:
@@ -83,8 +83,11 @@ class Network():
 
     def RecoltMoney(self):
         # collect information in bruteforce list.
-        collect_brute_player = [(x["username"], x["end"], x["user_ip"], x["start"], x["result"], x["now"], x["id"]) \
-                                for x in self.targetBruted["brutes"]]
+        try:
+            collect_brute_player = [(x["username"], x["end"], x["user_ip"], x["start"], x["result"], x["now"], x["id"]) \
+                                    for x in self.targetBruted["brutes"]]
+        except KeyError:
+            collect_brute_player = []
 
         for PlayerBrute in collect_brute_player:
             PlayerBruteUsername = PlayerBrute[0]
