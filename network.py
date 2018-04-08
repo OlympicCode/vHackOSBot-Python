@@ -98,6 +98,12 @@ class Network():
                 reqMoney = self.ut.requestString("remotebanking.php", target=PlayerBruteIP, accesstoken=self.Configuration["accessToken"], action="100", amount=money,  lang="en")
                 self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[32m{} {} to '{}'\033[0m".format(os.path.basename(__file__), "\033[32myou are collected +", money, PlayerBruteIP))
                 time.sleep(0.5)
+                reqRemotelog = self.ut.requestString("remotelog.php", target=PlayerBruteIP, accesstoken=self.Configuration["accessToken"], action="100", log=self.Configuration["msgLog"])
+                resultLog = int(reqRemotelog["result"])
+
+                if resultLog == 2:
+                    self.ut.viewsPrint("showMsgWriteLog", "[{}] - \033[34m Write log '{}' to '{}'\033[0m".format(os.path.basename(__file__), self.Configuration["msgLog"], PlayerBruteIP))
+
             else:
                 self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[33m{} {} to '{}'\033[0m".format(os.path.basename(__file__), "money = 0 no possible to get money", money, PlayerBruteIP))
                 time.sleep(0.5)
