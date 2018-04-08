@@ -32,7 +32,9 @@ class Network():
                 time.sleep(1)
             else:
                 # attack ip if firewall ennemy < your SDK
-                self.AttackTarget(ip)
+                result = self.AttackTarget(ip)
+                if result == 0:
+                    break
         return True
 
     def ChangeLog(self, ip):
@@ -88,6 +90,7 @@ class Network():
         else:
             self.ut.viewsPrint("showMsgErrorSdk=0", "[{}] - don't possible to hack sdk exploit = 0 wait.".format(os.path.basename(os.path.basename(__file__))))
             time.sleep(0.5)
+            return 0
 
     def RecoltMoney(self):
         # collect information in bruteforce list.
