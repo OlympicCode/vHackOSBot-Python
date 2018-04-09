@@ -51,7 +51,7 @@ class Update():
             
             # install application if level required < level
 
-            if int(applications["require"]) <= int(self.store["level"]) and 'baseprice' not in self.store["apps"]:
+            if int(applications["require"]) <= int(self.store["level"]) and int(applications["level"]) == 0:
                 result = self.ut.requestString("store.php",
                                                 accesstoken=self.Configuration["accessToken"],
                                                 appcode=applications["appid"],
