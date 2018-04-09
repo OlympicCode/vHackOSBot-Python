@@ -13,6 +13,7 @@ class Network():
         startFunctionAttack = self.startFunctionAttack()
         if startFunctionAttack == True:
             self.ut.viewsPrint("showMsgEndAttack", "[{}] - End Attack Loop Success.".format(os.path.basename(__file__)))
+        self.createMalwareKit()
         self.RecoltMoney()
 
     def startFunctionAttack(self):
@@ -116,3 +117,13 @@ class Network():
             else:
                 self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[33m{} {} to '{}'\033[0m".format(os.path.basename(__file__), "money = 0 no possible to get money", money, PlayerBruteIP))
                 time.sleep(0.5)
+
+    def createMalwareKit(self):
+        malware = self.ut.requestString("mwk.php", accesstoken=self.Configuration["accessToken"], lang="en")
+        if int(malware["result"]) == 0:
+            if int(malware["tasksCount"]) != 1:
+                malware = self.ut.requestString("mwk.php", accesstoken=self.Configuration["accessToken"], action="100", lang="en")
+                self.ut.viewsPrint("showMsgGenerateMWK", "[{}] - \033[33m Add 1 MalwareKit running task you are ({}) MWK \033[0m".format(os.path.basename(__file__), malware["mwReady"]))
+
+
+
