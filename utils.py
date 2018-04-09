@@ -5,6 +5,7 @@ import base64
 import hashlib
 import time
 import requests
+
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import ssl
 import logging
@@ -167,7 +168,7 @@ class Utils:
           try:
               Configuration = yaml.load(stream, Loader=yaml.RoundTripLoader)
           except yaml.YAMLError as exc:
-              print("{} [{}]".format("Error in your config.yml please check in", exc))
+              self.viewsPrint("ErrorConfiguration", "{} [{}]".format("Error in your config.yml please check in", exc))
               exit(0)
 
       if Configuration:
@@ -211,7 +212,7 @@ class Utils:
 
       elif select_tables == 2:
         try:
-            self.account_info = self.requestStringNowait("update.php", uID=self.uID, accesstoken=self.accessToken)
+            self.account_info = self.requestStringNowait("update.php", accesstoken=self.Configuration["accessToken"])
             self.exploits = int(self.account_info["exploits"])
             progress = round(int(self.account_info["exp"]))/round(int(self.account_info["expreq"]))
             account_information = [["your account information", "update information"], 
@@ -310,11 +311,11 @@ class Utils:
             try:
                 result = self.request.get(url_login, timeout=5, verify=False)
             except requests.exceptions.ConnectTimeout:
-                print("Request Timeout... TimeOut connection '{}'".format(url))
+                self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection '{}'".format(url))
                 exit(0)
 
             except requests.exceptions.ConnectionError:
-                print("Request Timeout... Connection Error '{}'".format(url))
+                self.viewsPrint("ErorRequest", "Request Timeout... Connection Error '{}'".format(url))
                 exit(0)
 
             result.encoding = 'UTF-8'
@@ -469,11 +470,11 @@ class Utils:
                 try:
                     result = self.request.get(url_login, timeout=5, verify=False)
                 except requests.exceptions.ConnectTimeout:
-                    print("Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
                     exit(0)
 
                 except requests.exceptions.ConnectionError:
-                    print("Request Timeout... Connection Error '{}' with code: [{}]".format('login.php', url_login.status_code))
+                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format('login.php', url_login.status_code))
                     exit(0)
 
                 result.encoding = 'UTF-8'
@@ -494,11 +495,11 @@ class Utils:
                 try:
                     result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
                 except requests.exceptions.ConnectTimeout:
-                    print("Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
                     exit(0)
 
                 except requests.exceptions.ConnectionError:
-                    print("Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
+                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
                     exit(0)
 
                 if kwargs["debug"] is True:
@@ -522,18 +523,18 @@ class Utils:
                 try:
                     result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
                 except requests.exceptions.ConnectTimeout:
-                    print("Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint("BadRequest", "Request Timeout... TimeOut connection {}".format(php))
                     exit(0)
 
                 except requests.exceptions.ConnectionError:
-                    print("Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
+                    self.viewsPrint("BadRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
                     exit(0)
 
                 result.encoding = 'UTF-8'
                 try:
                     parseJson = result.json()
                 except ValueError:
-                    print("Sorry, bot close for bad request...")
+                    self.viewsPrint("ErrorJson", "Sorry, bot close for bad request...")
                     exit(0)
 
                 try:
@@ -577,7 +578,7 @@ class Utils:
         i = 0
         while True:
             if i > 10:
-                exit(0)
+                break
             if self.uID is None or self.accessToken is None or self.request is None and self.sync_mobile is False:
                 # connect login.
                 self.request = requests.Session()
@@ -586,12 +587,10 @@ class Utils:
                 try:
                     result = self.request.get(url_login, timeout=3, verify=False)
                 except requests.exceptions.ConnectTimeout:
-                    print("Request Timeout... TimeOut connection {}".format(php))
-                    exit(0)
+                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ConnectionError:
-                    print("Request Timeout... Connection Error '{}' with code: [{}]".format('login.php', url_login.status_code))
-                    exit(0)
+                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format('login.php', url_login.status_code))
 
                 result.encoding = 'UTF-8'
                 parseJson = result.json()
@@ -611,12 +610,10 @@ class Utils:
                 try:
                     result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
                 except requests.exceptions.ConnectTimeout:
-                    print("Request Timeout... TimeOut connection {}".format(php))
-                    exit(0)
+                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ConnectionError:
-                    print("Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
-                    exit(0)
+                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
 
                 if kwargs["debug"] is True:
                     logging.info(result.json())
@@ -639,19 +636,23 @@ class Utils:
                 try:
                     result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
                 except requests.exceptions.ConnectTimeout:
-                    print("Request Timeout... TimeOut connection {}".format(php))
-                    exit(0)
+                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ConnectionError:
-                    print("Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
-                    exit(0)
-
+                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
 
                 result.encoding = 'UTF-8'
-                parseJson = result.json()
+                try:
+                    parseJson = result.json()
+                except:
+                    time.sleep(3)
+                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
+                    result.encoding = 'UTF-8'
+                    parseJson = result.json()
+
                 try:
                     self.accessToken = str(parseJson["accesstoken"])
-                except KeyError:
+                except (KeyError, UnboundLocalError):
                     pass
 
             i = i + 1
