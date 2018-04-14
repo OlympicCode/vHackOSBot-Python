@@ -267,8 +267,10 @@ Waiting for user input : """)
                         while True:
                             ch = sys.stdin.read(1)
                             if str(ch) == "m":
-                              sys.stdout.write("\nyour money...")
-                              time.sleep(0.3)
+                              self.minefinish = int(self.account_info['minerLeft'])
+                              sys.stdout.write("\nminerLeft {} in secondes".format(self.minefinish))
+                              sys.stdout.write("\nwaiting until {} --- {}".format(self.tuntin(self.minefinish), datetime.timedelta(seconds=(self.minefinish))))
+                              time.sleep(1)
                             if ch == "q":
                               sys.stdout.write("\nok ok, good bye ;)\n")
                               sys.exit()
