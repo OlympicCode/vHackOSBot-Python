@@ -18,6 +18,10 @@ class Network():
 
     def startFunctionAttack(self):
         # collect information in network.
+        if "ips" not in self.network:
+            self.ut.viewsPrint("showMsgErrorAPI", "you have not network player weird... please wait")
+            return False
+
         collect_scan_player = [(x["ip"], x["fw"], x["open"], x["level"]) \
                                 for x in self.network["ips"]]
 
