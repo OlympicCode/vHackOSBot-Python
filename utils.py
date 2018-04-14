@@ -138,10 +138,10 @@ class Utils:
             self.msgremotelog = self.Configuration["msgLog"]
         except KeyError as e:
             print("Error Configuration {}".format(e))
-            exit(0)
+            sys.exit()
         if self.username is None or self.password is None:
           print("please Change Username/Password to config.yml")
-          exit(0)
+          sys.exit()
         self.user_agent = self.generateUA(self.username + self.password)
         self.all_data = [['Console Log vHackOS - by vBlackOut  [https://github.com/vBlackOut]']]
 
@@ -169,7 +169,7 @@ class Utils:
               Configuration = yaml.load(stream, Loader=yaml.RoundTripLoader)
           except yaml.YAMLError as exc:
               self.viewsPrint("ErrorConfiguration", "{} [{}]".format("Error in your config.yml please check in", exc))
-              exit(0)
+              sys.exit()
 
       if Configuration:
           return Configuration
@@ -230,7 +230,7 @@ class Utils:
                                                                                                          "Your level ", self.account_info["level"], round(progress*100, 1))]]
         except KeyError:
           account_information = [["your account information", "update information"], ["Error", "Error"]]
-          exit(0)
+          sys.exit()
         table1 = SingleTable(data)
         table2 = SingleTable(account_information)
         time.sleep(0.3)
@@ -326,11 +326,11 @@ Waiting for user input : """)
                 result = self.request.get(url_login, timeout=5, verify=False)
             except requests.exceptions.ConnectTimeout:
                 self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection '{}'".format(url))
-                exit(0)
+                sys.exit()
 
             except requests.exceptions.ConnectionError:
                 self.viewsPrint("ErorRequest", "Request Timeout... Connection Error '{}'".format(url))
-                exit(0)
+                sys.exit()
 
             result.encoding = 'UTF-8'
             parseJson = result.json()
@@ -475,7 +475,7 @@ Waiting for user input : """)
         i = 0
         while True:
             if i > 10:
-                exit(0)
+                sys.exit()
             if self.uID is None or self.accessToken is None or self.request is None and self.sync_mobile is False:
                 # connect login.
                 self.request = requests.Session()
@@ -485,11 +485,11 @@ Waiting for user input : """)
                     result = self.request.get(url_login, timeout=5, verify=False)
                 except requests.exceptions.ConnectTimeout:
                     self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
-                    exit(0)
+                    sys.exit()
 
                 except requests.exceptions.ConnectionError:
                     self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format('login.php', url_login.status_code))
-                    exit(0)
+                    sys.exit()
 
                 result.encoding = 'UTF-8'
                 parseJson = result.json()
@@ -538,18 +538,18 @@ Waiting for user input : """)
                     result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
                 except requests.exceptions.ConnectTimeout:
                     self.viewsPrint("BadRequest", "Request Timeout... TimeOut connection {}".format(php))
-                    exit(0)
+                    sys.exit()
 
                 except requests.exceptions.ConnectionError:
                     self.viewsPrint("BadRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
-                    exit(0)
+                    sys.exit()
 
                 result.encoding = 'UTF-8'
                 try:
                     parseJson = result.json()
                 except ValueError:
                     self.viewsPrint("ErrorJson", "Sorry, bot close for bad request...")
-                    exit(0)
+                    sys.exit()
 
                 try:
                     self.accessToken = str(parseJson["accesstoken"])
