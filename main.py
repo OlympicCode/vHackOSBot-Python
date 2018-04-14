@@ -1,6 +1,7 @@
 from update import Update
 from network import Network
 from utils import Utils
+from miner import Miner
 import sys
 import os
 try:
@@ -12,6 +13,7 @@ class run():
     def __init__(self, ut):
         update = Update(ut)
         network = Network(ut)
+        miner = Miner(ut)
 
 if __name__ == '__main__':
     ut = Utils()

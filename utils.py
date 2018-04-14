@@ -247,7 +247,7 @@ class Utils:
             print(table1.table)
             print(table2.table)
             if windows is False:
-                sys.stdout.write("""\nCMD: [m] Get Money
+                sys.stdout.write("""\nCMD: [m] Get Miner info
      [q] Quit Program
 Waiting for user input : """)
                 with raw_mode(sys.stdin):
@@ -256,8 +256,10 @@ Waiting for user input : """)
                         while True:
                             ch = sys.stdin.read(1)
                             if ch == "m":
-                              sys.stdout.write("\nyour money...")
-                              time.sleep(0.3)
+                              self.minefinish = int(self.account_info['minerLeft'])
+                              sys.stdout.write("\nminerLeft {} in secondes".format(self.minefinish))
+                              sys.stdout.write("\nwaiting until {} --- {}".format(self.tuntin(self.minefinish), datetime.timedelta(seconds=(self.minefinish))))
+                              time.sleep(1)
                             if ch == "q":
                               sys.stdout.write("\nok ok, good bye ;)\n")
                               sys.exit()
@@ -275,6 +277,10 @@ Waiting for user input : """)
                         pass
         except IOError as e:
           pass
+
+    def tuntin(self, secs):
+        st = (datetime.datetime.now() + datetime.timedelta(seconds=300))
+        return st.strftime('%H:%M:%S')
 
     def getPlatform(self):
         return self.platform
