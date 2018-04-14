@@ -23,7 +23,6 @@ class Miner():
 
         else:
             result = self.MinerInfo()
-            self.ut.viewsPrint("MinerMsgError", result)
             if result['result'] == '0':
                 if result['running'] == '2' and result['claimed'] == '0':
                     collectresult = self.doCollect()

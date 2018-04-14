@@ -120,6 +120,7 @@ class Network():
                 self.ChangeLog(PlayerBruteIP)
             else:
                 self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[33m{} {} to '{}'\033[0m".format(os.path.basename(__file__), "money = 0 no possible to get money", money, PlayerBruteIP))
+                self.ChangeLog(PlayerBruteIP)
                 time.sleep(0.5)
 
     def createMalwareKit(self):
