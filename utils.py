@@ -144,7 +144,7 @@ class Utils:
           exit(0)
         self.user_agent = self.generateUA(self.username + self.password)
         self.all_data = [['Console Log vHackOS - by vBlackOut  [https://github.com/vBlackOut]']]
-    
+
         try:
             if self.sync_mobile:
                 self.generateConfiguration(uID=self.Configuration["uID"], accessToken=self.Configuration["accessToken"])
@@ -159,7 +159,7 @@ class Utils:
             self.accessToken = None
         try:
             self.uID = self.Configuration["uID"]
-        except KeyError: 
+        except KeyError:
             self.uID = None
 
     def readConfiguration(self):
@@ -215,13 +215,13 @@ class Utils:
             self.account_info = self.requestStringNowait("update.php", accesstoken=self.Configuration["accessToken"])
             self.exploits = int(self.account_info["exploits"])
             progress = round(int(self.account_info["exp"]))/round(int(self.account_info["expreq"]))
-            account_information = [["your account information", "update information"], 
+            account_information = [["your account information", "update information"],
                                    ["{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}\n{10}: {11}".format("Your exploits ", self.exploits,
                                                                                                               "Your spam ", self.account_info["spam"],
                                                                                                               "Your network speed ", self.account_info["inet"],
                                                                                                               "Your money ", self.account_info["money"],
                                                                                                               "Your IP ", self.account_info["ipaddress"],
-                                                                                                              "Your netcoins ", self.account_info["netcoins"]), 
+                                                                                                              "Your netcoins ", self.account_info["netcoins"]),
 
                                    "{}: {}\n{}: {}\n{}: {}\n{}: {}\n{}: {}, XP({}%)".format("Your SDK ", self.account_info["sdk"],
                                                                                                          "Your Firewall ", self.account_info["fw"],
@@ -247,7 +247,9 @@ class Utils:
             print(table1.table)
             print(table2.table)
             if windows is False:
-                sys.stdout.write("\nCMD: [m] Get Money \nWaiting for user input : ")
+                sys.stdout.write("""\nCMD: [m] Get Money
+     [q] Quit Program
+Waiting for user input : """)
                 with raw_mode(sys.stdin):
                     try:
                       if cur_version <= req_version:
@@ -256,12 +258,18 @@ class Utils:
                             if ch == "m":
                               sys.stdout.write("\nyour money...")
                               time.sleep(0.3)
+                            if ch == "q":
+                              sys.stdout.write("\nok ok, good bye ;)\n")
+                              sys.exit()
                       else:
                         while True:
                             ch = sys.stdin.read(1)
                             if str(ch) == "m":
                               sys.stdout.write("\nyour money...")
                               time.sleep(0.3)
+                            if ch == "q":
+                              sys.stdout.write("\nok ok, good bye ;)\n")
+                              sys.exit()
                             break
                     except (KeyboardInterrupt, EOFError):
                         pass
@@ -288,9 +296,9 @@ class Utils:
         self.Configuration['attack_mode'] = self.attack_mode
         self.Configuration['update'] = self.update
         self.Configuration["msgLog"] = self.msgremotelog
-        # delete old file 
+        # delete old file
         #os.remove("config.yml")
-        
+
         try:
             self.Configuration['uID'] = uID
         except KeyError:
@@ -335,18 +343,18 @@ class Utils:
             self.Configuration.yaml_add_eol_comment("# <- If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone.\n\n", 'sync_mobile', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
-             
+
             try:
               # for python 3
                 with io.open('config.yml', 'w+') as outfile:
-                  yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
+                  yaml.dump(self.Configuration, stream=outfile, default_flow_style=False,
                             Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
             except:
               # for python 2
                 with io.open('config.yml', 'wb') as outfile:
-                  yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
+                  yaml.dump(self.Configuration, stream=outfile, default_flow_style=False,
                             Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
-            
+
             self.request = None
 
         else:
@@ -358,16 +366,16 @@ class Utils:
             self.Configuration.yaml_add_eol_comment("# <- If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone.\n\n", 'sync_mobile', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
-            
+
             try:
               # for python 3
                 with io.open('config.yml', 'w') as outfile:
-                    yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
+                    yaml.dump(self.Configuration, stream=outfile, default_flow_style=False,
                               Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
             except:
                 # for python 2
                 with io.open('config.yml', 'wb') as outfile:
-                    yaml.dump(self.Configuration, stream=outfile, default_flow_style=False, 
+                    yaml.dump(self.Configuration, stream=outfile, default_flow_style=False,
                               Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
 
 
@@ -397,7 +405,7 @@ class Utils:
         str8 = self.md5hash("{}{}{}".format(jsonString, jsonString,
                                             self.md5hash(jsonString)))
 
-        return "{}{}?user={}&pass={}".format(self.url, php, 
+        return "{}{}?user={}&pass={}".format(self.url, php,
                                              self.generateUser(jsonString), str8)
 
     def generateURL(self, uid, php, **kwargs):
@@ -421,7 +429,7 @@ class Utils:
             t = (5, "Check your Internet.")
         elif code_return == u"8":
             t = (8, "User/Password wrong!")
-        elif code_return == u"10": 
+        elif code_return == u"10":
             t = (10, "API is updated.")
         elif code_return == u"15":
             t = (10, "You are Banned sorry :(")
@@ -483,14 +491,14 @@ class Utils:
                 check_return_server = self.CheckServerError(parseJson)
                 if check_return_server is not None:
                     return "Server Error: [{}] {}".format(check_return_server[0], check_return_server[1])
-                
+
                 self.accessToken = str(parseJson["accesstoken"])
                 self.uID = int(parseJson["uid"].encode("UTF-8"))
                 global login
                 self.login = "1"
 
                 self.generateConfiguration(self.uID, self.accessToken)
-                
+
                 # Create First request.
                 try:
                     result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
@@ -598,14 +606,14 @@ class Utils:
                 check_return_server = self.CheckServerError(parseJson)
                 if check_return_server is not None:
                     return "Server Error: [{}] {}".format(check_return_server[0], check_return_server[1])
-                
+
                 self.accessToken = str(parseJson["accesstoken"])
                 self.uID = int(parseJson["uid"].encode("UTF-8"))
                 global login
                 self.login = "1"
 
                 self.generateConfiguration(self.uID, self.accessToken)
-                
+
                 # Create First request.
                 try:
                     result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)

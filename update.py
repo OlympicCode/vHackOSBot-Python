@@ -13,7 +13,13 @@ class Update():
     def startFunctionUpdate(self):
 
         # get money info
-        money = int(self.store["money"])
+        if "money" in self.store and "apps" in self.store:
+            money = int(self.store["money"])
+            apps = self.store["apps"]
+        else:
+            apps = []
+            money = 0
+
         p = Player(self.ut)
 
         getTask = self.ut.requestString("tasks.php", accesstoken=self.Configuration["accessToken"])
@@ -22,9 +28,9 @@ class Update():
             update = int(getTask['updateCount'])
         else:
             update = 0
-
+            
         # get applications and update this
-        for count_update, applications in enumerate(self.store["apps"]):
+        for count_update, applications in enumerate(apps):
             # update application
 
 

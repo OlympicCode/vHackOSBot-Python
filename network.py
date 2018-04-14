@@ -25,7 +25,7 @@ class Network():
         for info_player in collect_scan_player:
             ip = str(info_player[0])
             firewall = int(info_player[1])
-            
+
             # define the rule for attack ennemy
             if firewall > int(p.getHelperApplication()["SDK"]["level"]):
                 # don't possible to attack user Firewall is to strong pass other player
@@ -124,6 +124,3 @@ class Network():
             if int(malware["tasksCount"]) != 1:
                 malware = self.ut.requestString("mwk.php", accesstoken=self.Configuration["accessToken"], action="100", lang="en")
                 self.ut.viewsPrint("showMsgGenerateMWK", "[{}] - \033[33m Add 1 MalwareKit running task you are ({}) MWK \033[0m".format(os.path.basename(__file__), malware["mwReady"]))
-
-
-
