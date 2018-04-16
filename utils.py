@@ -476,13 +476,13 @@ Waiting for user input : """)
 
         t = None
         if code_return == u"5":
-            t = (5, "Check your Internet.")
+            t = (5, "Check your Internet Connection.")
         elif code_return == u"8":
             t = (8, "User/Password wrong!")
         elif code_return == u"10":
             t = (10, "API is updated.")
         elif code_return == u"15":
-            t = (10, "You are Banned sorry :(")
+            t = (10, "You are banned sorry :(")
         elif code_return == u"99":
             t = (99, "Server is down for Maintenance, please be patient.")
         return t
@@ -592,7 +592,7 @@ Waiting for user input : """)
                 try:
                     parseJson = result.json()
                 except ValueError:
-                    self.viewsPrint("ErrorJson", "Sorry, bot close for bad request...")
+                    self.viewsPrint("ErrorJson", "Closing bot upon bad request...")
                     sys.exit()
 
                 try:
