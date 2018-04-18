@@ -19,7 +19,7 @@ class Network():
     def startFunctionAttack(self):
         # collect information in network.
         if "ips" not in self.network:
-            self.ut.viewsPrint("showMsgErrorAPI", "you have not network player weird... please wait")
+            self.ut.viewsPrint("showMsgErrorAPI", "You dont have ips in the network app... weird ... please wait")
             return False
 
         collect_scan_player = [(x["ip"], x["fw"], x["open"], x["level"]) \
@@ -30,13 +30,13 @@ class Network():
             ip = str(info_player[0])
             firewall = int(info_player[1])
 
-            # define the rule for attack ennemy
+            # define the rule for attack target
             if firewall > int(p.getHelperApplication()["SDK"]["level"]):
-                # don't possible to attack user Firewall is to strong pass other player
+                # not possible to attack user if their firewall is too strong
                 self.ut.viewsPrint("showMsgDoesntPossibleAttack", "[{}] - Don't Attack Your SDK ({}) vs Target Firewall ({}) on ip : '{}' :(".format(os.path.basename(__file__),int(p.getHelperApplication()["SDK"]["level"]), firewall, ip))
                 time.sleep(1)
             else:
-                # attack ip if firewall ennemy < your SDK
+                # attack ip if firewall enemy < your SDK
                 result = self.AttackTarget(ip)
                 if result == 0:
                     break
@@ -58,7 +58,7 @@ class Network():
             targetHack = self.ut.requestString("exploit.php", lang="en", target=ip, accesstoken=self.Configuration["accessToken"])
             resultHack = int(targetHack["result"])
 
-            # if result is good you are access to connect in device now
+            # if result is good you are able to connect
             if resultHack == 0:
                 # connect to the device
                 targetRemote = self.ut.requestString("remote.php", lang="en", target=ip, accesstoken=self.Configuration["accessToken"])
@@ -66,15 +66,15 @@ class Network():
             else:
                 return self.ut.result(result="don't return 0 weird", code=1)
 
-            # if result is good you are possibly launch bruteforce to get money.
+            # if result is good you can launch a bruteforce to steal from bank
             if resultRemote == 0:
                 bankingRemote = self.ut.requestString("remotebanking.php", target=ip, accesstoken=self.Configuration["accessToken"])
                 resultbanking = int(bankingRemote["result"])
                 passwordbanking = str(bankingRemote["remotepassword"])
             else:
-                return self.ut.result(result="don't return 0 weird", code=2)
+                return self.ut.result(result="not returning 0 weird", code=2)
 
-            # if banque don't have password the banque not cracked ... start bruteforce
+            # if password string was not recieved then it was not cracked ... start bruteforce
             if passwordbanking == "":
                 reqBruteForce = self.ut.requestString("startbruteforce.php", target=ip, accesstoken=self.Configuration["accessToken"])
                 resultBruteforce = int(reqBruteForce["result"])
@@ -88,8 +88,8 @@ class Network():
                 self.ChangeLog(ip)
                 time.sleep(0.3)
 
-            # if result is return 2 you SDK level is == 0.
-            # don't possibly for you to hack wait time for
+            # if result is return 2 your SDK level is == 0.
+            # not possible for you to hack, wait time to
             # regenerate SDK.
             elif resultHack == 2:
                 pass
@@ -129,4 +129,4 @@ class Network():
         if int(malware["result"]) == 0:
             if int(malware["tasksCount"]) != 1:
                 malware = self.ut.requestString("mwk.php", accesstoken=self.Configuration["accessToken"], action="100", lang="en")
-                self.ut.viewsPrint("showMsgGenerateMWK", "[{}] - \033[33m Add 1 MalwareKit running task you are ({}) MWK \033[0m".format(os.path.basename(__file__), malware["mwReady"]))
+                self.ut.viewsPrint("showMsgGenerateMWK", "[{}] - \033[33m Creating Malware Kit, you have ({}) Malware Kits \033[0m".format(os.path.basename(__file__), malware["mwReady"]))

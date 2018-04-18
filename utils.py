@@ -388,11 +388,11 @@ Waiting for user input : """)
 
             self.Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
             self.Configuration.yaml_add_eol_comment("# <- Your Password Account\n\n", 'password', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- debug mode dev online\n\n", 'debug', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- debug mode\n\n", 'debug', column=5)
             self.Configuration.yaml_add_eol_comment("# <- show the return bot print information\n\n", 'show_info', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone.\n\n", 'sync_mobile', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone. (Recommended OFF)\n\n", 'sync_mobile', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- Automatically added uID for your account don't change /!\\", 'uID', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- Automatically added accessToken for your account don't change /!\\", 'accessToken', column=5)
 
             try:
               # for python 3
@@ -413,9 +413,9 @@ Waiting for user input : """)
             self.Configuration.yaml_add_eol_comment("# <- Tour Password Account\n\n", 'password', column=5)
             self.Configuration.yaml_add_eol_comment("# <- debug mode dev online\n\n", 'debug', column=5)
             self.Configuration.yaml_add_eol_comment("# <- show the return bot print information\n\n", 'show_info', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone.\n\n", 'sync_mobile', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- Automatical uID for your account don't change /!\\", 'uID', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- Automatical accessToken for your account don't change /!\\", 'accessToken', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone. (Recommended OFF)\n\n", 'sync_mobile', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- Automatically added uID for your account don't change /!\\", 'uID', column=5)
+            self.Configuration.yaml_add_eol_comment("# <- Automatically added accessToken for your account don't change /!\\", 'accessToken', column=5)
 
             try:
               # for python 3
@@ -476,13 +476,13 @@ Waiting for user input : """)
 
         t = None
         if code_return == u"5":
-            t = (5, "Check your Internet.")
+            t = (5, "Check your Internet Connection.")
         elif code_return == u"8":
             t = (8, "User/Password wrong!")
         elif code_return == u"10":
             t = (10, "API is updated.")
         elif code_return == u"15":
-            t = (10, "You are Banned sorry :(")
+            t = (10, "You are banned sorry :(")
         elif code_return == u"99":
             t = (99, "Server is down for Maintenance, please be patient.")
         return t
@@ -592,7 +592,7 @@ Waiting for user input : """)
                 try:
                     parseJson = result.json()
                 except ValueError:
-                    self.viewsPrint("ErrorJson", "Sorry, bot close for bad request...")
+                    self.viewsPrint("ErrorJson", "Closing bot upon bad request...")
                     sys.exit()
 
                 try:

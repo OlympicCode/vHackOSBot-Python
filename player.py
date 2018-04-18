@@ -43,23 +43,23 @@ class Player():
         FinalApplication = {}
 
         for allApplication in Application:
-            # antivirus
+            # AntiVirus
             if int(allApplication["appid"]) == 1:
                 FinalApplication["AV"] = allApplication
                 
-            # firewall
+            # Firewall
             if int(allApplication["appid"]) == 2:
                 FinalApplication["FW"] = allApplication
 
-            # spam
+            # Spam
             if int(allApplication["appid"]) == 3:
                 FinalApplication["SPAM"] = allApplication
 
-            # brute force
+            # Brute Force
             if int(allApplication["appid"]) == 4:
                 FinalApplication["BRUTE"] = allApplication
 
-            # banque protecte
+            # Bank Protection
             if int(allApplication["appid"]) == 5:
                 FinalApplication["BP"] = allApplication
 

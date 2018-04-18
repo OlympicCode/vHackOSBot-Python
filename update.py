@@ -48,13 +48,13 @@ class Update():
                         money = money - int(applications["price"])
                         if result['result'] == '0':
                             update = update+1
-                            self.ut.viewsPrint("showMsgUpdate", "[{}] - Update for your {} +1".format(os.path.basename(__file__), list_update))
+                            self.ut.viewsPrint("showMsgUpdate", "[{}] - Updated {} +1".format(os.path.basename(__file__), list_update))
                             time.sleep(0.5)
                     else:
                         self.ut.viewsPrint("showMsgUpdate", "[{}] - you have not money to upgrade {}".format(os.path.basename(__file__), list_update))
                         time.sleep(0.5)
             else:
-                self.ut.viewsPrint("showMsgUpdatefull", "[{}] - full task used please wait.".format(os.path.basename(__file__)))
+                self.ut.viewsPrint("showMsgUpdatefull", "[{}] - full task list, please wait.".format(os.path.basename(__file__)))
                 time.sleep(0.5)
                 # install application if level required < level
                 if int(applications["require"]) <= int(self.store["level"]) and int(applications["level"]) == 0:
