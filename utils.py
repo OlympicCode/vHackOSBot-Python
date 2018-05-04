@@ -382,8 +382,9 @@ Waiting for user input : """)
             parseJson = result.json()
 
             check_return_server = self.CheckServerError(parseJson)
-            if check_return_server is not None:
-                return "Server Error: [{}] {}".format(check_return_server[0], check_return_server[1])
+            if check_return_server:
+                print("Server Error: [{}] {}".format(check_return_server[0], check_return_server[1]))
+                return False
 
             self.accessToken = str(parseJson["accesstoken"])
             self.uID = int(parseJson["uid"].encode("UTF-8"))
@@ -474,12 +475,12 @@ Waiting for user input : """)
         try:
           code_return = code_return["result"]
         except (TypeError, IndexError):
-          code_return = 0
+          code_return = "0"
 
         t = None
         if code_return == u"5":
             t = (5, "Check your Internet Connection.")
-        elif code_return == u"8":
+        elif code_return == u"2":
             t = (8, "User/Password wrong!")
         elif code_return == u"10":
             t = (10, "API is updated.")
@@ -544,8 +545,10 @@ Waiting for user input : """)
                 parseJson = result.json()
 
                 check_return_server = self.CheckServerError(parseJson)
-                if check_return_server is not None:
-                    return "Server Error: [{}] {}".format(check_return_server[0], check_return_server[1])
+
+                if check_return_server:
+                    print("Server Error: [{}] {}".format(check_return_server[0], check_return_server[1]))
+                    return False
 
                 self.accessToken = str(parseJson["accesstoken"])
                 self.uID = int(parseJson["uid"].encode("UTF-8"))
@@ -659,8 +662,9 @@ Waiting for user input : """)
                 parseJson = result.json()
 
                 check_return_server = self.CheckServerError(parseJson)
-                if check_return_server is not None:
-                    return "Server Error: [{}] {}".format(check_return_server[0], check_return_server[1])
+                if check_return_server:
+                   print("Server Error: [{}] {}".format(check_return_server[0], check_return_server[1]))
+                   return False
 
                 self.accessToken = str(parseJson["accesstoken"])
                 self.uID = int(parseJson["uid"].encode("UTF-8"))
