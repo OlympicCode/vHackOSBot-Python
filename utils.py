@@ -122,7 +122,7 @@ class Utils:
         self.platform = platform.system()
         self.request = None
         self.secret = "aeffI"
-        self.url = "https://api.vhack.cc/mobile/15/"
+        self.url = "https://api.vhack.cc/mobile/16/"
         self.Configuration = self.readConfiguration()
         self.numberLoop = 0
         self.account_info = None
@@ -136,6 +136,7 @@ class Utils:
             self.attack_mode = self.Configuration["attack_mode"]
             self.update = self.Configuration["update"]
             self.msgremotelog = self.Configuration["msgLog"]
+            self.timesleep = self.Configuration["timeSleep"]
         except KeyError as e:
             print("Error Configuration {}".format(e))
             sys.exit()
@@ -346,6 +347,7 @@ Waiting for user input : """)
         self.Configuration['attack_mode'] = self.attack_mode
         self.Configuration['update'] = self.update
         self.Configuration["msgLog"] = self.msgremotelog
+        self.Configuration["timeSleep"] = self.timesleep
         # delete old file
         #os.remove("config.yml")
 
@@ -492,6 +494,7 @@ Waiting for user input : """)
         self.user_agent = self.generateUA("testtest")
         try:
             if kwargs["debug"] is True:
+                time.sleep(self.timesleep)
                 http_client.HTTPConnection.debuglevel = 0
                 # You must initialize logging, otherwise you'll not see debug output.
                 logging.basicConfig()
@@ -505,6 +508,7 @@ Waiting for user input : """)
         except KeyError:
             kwargs["debug"] = self.debug
             if kwargs["debug"] is True:
+                time.sleep(self.timesleep)
                 http_client.HTTPConnection.debuglevel = 0
                 # You must initialize logging, otherwise you'll not see debug output.
                 logging.basicConfig()
@@ -526,6 +530,7 @@ Waiting for user input : """)
                 self.request.headers.update({'User-agent': self.user_agent})
                 url_login = self.Login('login.php', self.username, self.password)
                 try:
+                    time.sleep(self.timesleep)
                     result = self.request.get(url_login, timeout=5, verify=False)
                 except requests.exceptions.ConnectTimeout:
                     self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))

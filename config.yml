@@ -1,21 +1,22 @@
 username:  # <- Your Username Account
 password:  # <- Tour Password Account
 
-debug: false # <- debug mode
+debug: false # <- debug mode dev online
 
-sync_mobile: false # <- If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone.  (Recommended OFF)
+sync_mobile: false # <- If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone. (Recommended OFF)
 
 # exemple ['All', '!showMsgTotalBruteForceInfo'] <- show all but don't show Total Brute Force Information return bot print.
 # exemple ['showMsgTotalBruteForceInfo'] <- just show Total Brute Force Information return bot print.
 show_info: [All] # <- show the return bot print information
 
-# attack mode it's method for attack the bot, attack in bank ip save, ip List, or attack new ip 
+# attack mode it's method for attack the bot, attack in bank ip save, ip List, or attack new ip
 # - new -> -> if scan new user for attack
 # - bank_scan -> if scan user in bank
 # - ip_list -> if user exist in target bruteforce recollect money
 attack_mode: bank_scan
 
-uID:  # <- Automatically added uID for your account don't change /!\
-accessToken:  # <- Automatically added accessToken for your account don't change /!\
+uID: 364 # <- Automatically added uID for your account don't change /!\
+accessToken: 3800e16a932d5576414a71c827890c07 # <- Automatically added accessToken for your account don't change /!\
 update: [SDK, FW, AV, BP, IPSP]
-msgLog: Haha, you are Hacked by me.
+msgLog:
+timeSleep: 2 # <- Recommended minimal value 2
