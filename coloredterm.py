@@ -25,7 +25,7 @@ class colored():
             "showMsgEndAttack": Fore.RED,
             "showMsgErrorAPI": Fore.GREEN,
             "showMsgDoesntPossibleAttack": Fore.BLUE,
-            "showMsgWriteLog":  Fore.RED,
+            "showMsgWriteLog":  Fore.YELLOW,
             "showMsgCollectMoneyUser":  Fore.BLUE,
             "showMsgErrorSdk=0":  Fore.BLUE,
             "showMsgCollectMoneyUser":  Fore.BLUE,
