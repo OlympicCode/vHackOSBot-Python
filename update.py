@@ -28,7 +28,7 @@ class Update():
             update = int(getTask['updateCount'])
         else:
             update = 0
-            
+
         # get applications and update this
         for count_update, applications in enumerate(apps):
             # update application
