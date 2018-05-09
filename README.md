@@ -24,4 +24,4 @@ python main.py
 
 ## Contributing
 
-You can contribute and improve the bot through the [Pull requests](https://github.com/OlympicCode/vHackOSBot-Python/compare) or open a [issue](https://github.com/OlympicCode/vHackOSBot-Python/issues/new).
+You can contribute and improve the bot through the [Pull requests](https://github.com/OlympicCode/vHackOSBot-Python/pull/new/master) or open a [issue](https://github.com/OlympicCode/vHackOSBot-Python/issues/new).

@@ -7,8 +7,7 @@ import os
 try:
     import fcntl
 except:
-    pass
-
+   pass
 
 class run():
 
@@ -24,6 +23,6 @@ if __name__ == '__main__':
         fl = fcntl.fcntl(sys.stdin.fileno(), fcntl.F_GETFL)
         fcntl.fcntl(sys.stdin.fileno(), fcntl.F_SETFL, fl | os.O_NONBLOCK)
     except:
-        pass
+    	pass
     while 1:
         main = run(ut)
