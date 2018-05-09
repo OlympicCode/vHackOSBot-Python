@@ -22,7 +22,7 @@ class colored():
             "showMsgUpdate":  Fore.BLUE,
 
             # Network message
-            "showMsgEndAttack": Fore.RED,
+            "showMsgEndAttack": Fore.GREEN,
             "showMsgErrorAPI": Fore.GREEN,
             "showMsgDoesntPossibleAttack": Fore.BLUE,
             "showMsgWriteLog":  Fore.YELLOW,

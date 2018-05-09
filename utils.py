@@ -545,6 +545,9 @@ Waiting for user input : """)
                     sys.stdout.write("{:2d} seconds remaining. number retry ({})".format(remaining, i))
                     sys.stdout.flush()
                     time.sleep(1)
+                i = i + 1
+                python = sys.executable
+                os.execl(python, python, * sys.argv)
                 return False
 
             if self.uID is None or self.accessToken is None or self.request is None and self.sync_mobile is False:
