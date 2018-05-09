@@ -14,7 +14,7 @@ class colored():
         color = {
 
             #global message
-            "ErorRequest": Fore.RED,
+            "ErrorRequest": Fore.RED,
             "ErrorJson": Fore.RED,
 
             # update message
