@@ -16,6 +16,7 @@ import sys, os, platform
 import io
 import logging, coloredlogs
 import datetime
+from coloredterm import colored
 from time import gmtime, strftime
 try:
     import http.client as http_client
@@ -156,10 +157,15 @@ class Utils:
 
         try:
             self.accessToken = self.Configuration["accessToken"]
+            if self.accessToken == "":
+                self.accessToken = None
         except:
             self.accessToken = None
+
         try:
             self.uID = self.Configuration["uID"]
+            if self.uID == "":
+                self.uID = None
         except KeyError:
             self.uID = None
 
@@ -185,7 +191,7 @@ class Utils:
               if self.Configuration["debug"]:
                 print(self.printConsole("\033[0;103m\033[1;30mOutputBot: {} - {}\033[0m".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg)))
               else:
-                return self.OutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), self.printConsole(Msg)), 2)
+                return self.OutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), colored(condition, self.printConsole(Msg)).autocolored()), 2)
 
     def exploit(self):
         try:
@@ -213,7 +219,7 @@ class Utils:
 
       elif select_tables == 2:
         try:
-            self.account_info = self.requestStringNowait("update.php", accesstoken=self.Configuration["accessToken"])
+            self.account_info = self.requestString("update.php", accesstoken=self.Configuration["accessToken"])
             self.exploits = int(self.account_info["exploits"])
             progress = round(int(self.account_info["exp"]))/round(int(self.account_info["expreq"]))
             account_information = [["your account information", "update information"],
@@ -524,7 +530,9 @@ Waiting for user input : """)
         i = 0
         while True:
             if i > 10:
+                self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
                 sys.exit()
+
             if self.uID is None or self.accessToken is None or self.request is None and self.sync_mobile is False:
                 # connect login.
                 self.request = requests.Session()
@@ -535,11 +543,11 @@ Waiting for user input : """)
                     result = self.request.get(url_login, timeout=5, verify=False)
                 except requests.exceptions.ConnectTimeout:
                     self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
-                    sys.exit()
+
 
                 except requests.exceptions.ConnectionError:
                     self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format('login.php', url_login.status_code))
-                    sys.exit()
+
 
                 result.encoding = 'UTF-8'
                 parseJson = result.json()
@@ -562,16 +570,14 @@ Waiting for user input : """)
                     result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
                 except requests.exceptions.ConnectTimeout:
                     self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
-                    exit(0)
+
 
                 except requests.exceptions.ConnectionError:
                     self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
-                    exit(0)
+
 
                 if kwargs["debug"] is True:
                     logging.info(result.json())
-
-                return result.json()
 
             elif self.uID is not None or self.accessToken is not None:
                 #request = requests.Session()
@@ -599,9 +605,9 @@ Waiting for user input : """)
                 result.encoding = 'UTF-8'
                 try:
                     parseJson = result.json()
+                    result = True
                 except ValueError:
                     self.viewsPrint("ErrorJson", "Closing bot upon bad request...")
-                    sys.exit()
 
                 try:
                     self.accessToken = str(parseJson["accesstoken"])
@@ -611,7 +617,11 @@ Waiting for user input : """)
             i = i + 1
             if kwargs["debug"] is True:
                 logging.info(result.json())
-            return parseJson
+
+            if result:
+                break
+
+        return parseJson
 
     def requestStringNowait(self, php, **kwargs):
         # print("Request: {}, {}".format(php, self.uID))
@@ -685,8 +695,6 @@ Waiting for user input : """)
                 if kwargs["debug"] is True:
                     logging.info(result.json())
 
-                return result.json()
-
             elif self.uID is not None or self.accessToken is not None:
                 #request = requests.Session()
                 if not self.request:
@@ -725,7 +733,7 @@ Waiting for user input : """)
             i = i + 1
             if kwargs["debug"] is True:
                 logging.info(result.json())
-            return parseJson
+        return parseJson
 
 class Player():
     def __init__(self, ut):

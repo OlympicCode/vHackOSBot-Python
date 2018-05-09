@@ -1,6 +1,8 @@
 from utils import Utils
 from player import Player
-import os, time
+import os
+import time
+
 
 class Network():
     def __init__(self, ut):
@@ -47,7 +49,7 @@ class Network():
         resultLog = int(reqRemotelog["result"])
 
         if resultLog == 2:
-            self.ut.viewsPrint("showMsgWriteLog", "[{}] - \033[34m Write log '{}' to '{}'\033[0m".format(os.path.basename(__file__), self.Configuration["msgLog"], ip))
+            self.ut.viewsPrint("showMsgWriteLog", "[{}] - Write log '{}' to '{}'".format(os.path.basename(__file__), self.Configuration["msgLog"], ip))
 
 
     def AttackTarget(self, ip):
@@ -83,7 +85,7 @@ class Network():
 
             # verify your command target
             if resultBruteforce == 0:
-                self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[32m{} '{}'\033[0m".format(os.path.basename(__file__), "\033[32mStart Bruteforce to", ip))
+                self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - {} '{}'".format(os.path.basename(__file__), "Start Bruteforce to", ip))
                 time.sleep(0.5)
                 self.ChangeLog(ip)
                 time.sleep(0.3)
@@ -116,11 +118,11 @@ class Network():
                 money = 0
             if money > 0:
                 reqMoney = self.ut.requestString("remotebanking.php", target=PlayerBruteIP, accesstoken=self.Configuration["accessToken"], action="100", amount=money,  lang="en")
-                self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[32m{} {} to '{}'\033[0m".format(os.path.basename(__file__), "\033[32myou are collected +", money, PlayerBruteIP))
+                self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - {} {} to '{}'\033[0m".format(os.path.basename(__file__), "you are collected +", money, PlayerBruteIP))
                 time.sleep(0.5)
                 self.ChangeLog(PlayerBruteIP)
             else:
-                self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - \033[33m{} {} to '{}'\033[0m".format(os.path.basename(__file__), "money = 0 no possible to get money", money, PlayerBruteIP))
+                self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - {} {} to '{}'\033[0m".format(os.path.basename(__file__), "money = 0 no possible to get money", money, PlayerBruteIP))
                 time.sleep(1)
                 self.ChangeLog(PlayerBruteIP)
 
@@ -129,4 +131,4 @@ class Network():
         if int(malware["result"]) == 0:
             if int(malware["tasksCount"]) != 1:
                 malware = self.ut.requestString("mwk.php", accesstoken=self.Configuration["accessToken"], action="100", lang="en")
-                self.ut.viewsPrint("showMsgGenerateMWK", "[{}] - \033[33m Creating Malware Kit, you have ({}) Malware Kits \033[0m".format(os.path.basename(__file__), malware["mwReady"]))
+                self.ut.viewsPrint("showMsgGenerateMWK", "[{}] -  Creating Malware Kit, you have ({}) Malware Kits".format(os.path.basename(__file__), malware["mwReady"]))
