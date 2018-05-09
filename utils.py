@@ -394,7 +394,7 @@ Waiting for user input : """)
             check_return_server = self.CheckServerError(parseJson)
             if check_return_server:
                 print("Server Error: [{}] {}".format(check_return_server[0], check_return_server[1]))
-                return Fals
+                return False
 
             self.accessToken = str(parseJson["accesstoken"])
             self.uID = int(parseJson["uid"].encode("UTF-8"))
