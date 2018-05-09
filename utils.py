@@ -151,7 +151,7 @@ class Utils:
             if self.sync_mobile:
                 self.generateConfiguration(uID=self.Configuration["uID"], accessToken=self.Configuration["accessToken"])
             else:
-                self.generateConfiguration(uID="", accessToken="")
+                self.generateConfiguration()
         except TypeError:
             self.generateConfiguration()
 
