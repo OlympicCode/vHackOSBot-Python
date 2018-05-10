@@ -36,7 +36,6 @@ class Network():
             if firewall > int(p.getHelperApplication()["SDK"]["level"]):
                 # not possible to attack user if their firewall is too strong
                 self.ut.viewsPrint("showMsgDoesntPossibleAttack", "[{}] - Don't Attack Your SDK ({}) vs Target Firewall ({}) on ip : '{}' :(".format(os.path.basename(__file__),int(p.getHelperApplication()["SDK"]["level"]), firewall, ip))
-                time.sleep(1)
             else:
                 # attack ip if firewall enemy < your SDK
                 result = self.AttackTarget(ip)
@@ -86,9 +85,7 @@ class Network():
             # verify your command target
             if resultBruteforce == 0:
                 self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - {} '{}'".format(os.path.basename(__file__), "Start Bruteforce to", ip))
-                time.sleep(0.5)
                 self.ChangeLog(ip)
-                time.sleep(0.3)
 
             # if the return result is 2, then you have no exploits
             # not possible for you to hack, wait to
@@ -97,7 +94,6 @@ class Network():
                 pass
         else:
             self.ut.viewsPrint("showMsgErrorSdk=0", "[{}] - not possible to hack, no exploits wait.".format(os.path.basename(os.path.basename(__file__))))
-            time.sleep(0.5)
             return 0
 
     def RecoltMoney(self):
@@ -119,11 +115,9 @@ class Network():
             if money > 0:
                 reqMoney = self.ut.requestString("remotebanking.php", target=PlayerBruteIP, accesstoken=self.Configuration["accessToken"], action="100", amount=money,  lang="en")
                 self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - {} {} to '{}'\033[0m".format(os.path.basename(__file__), "you are collected +", money, PlayerBruteIP))
-                time.sleep(0.5)
                 self.ChangeLog(PlayerBruteIP)
             else:
                 self.ut.viewsPrint("showMsgCollectMoneyUser", "[{}] - {} {} to '{}'\033[0m".format(os.path.basename(__file__), "money = 0 no possible to get money", money, PlayerBruteIP))
-                time.sleep(1)
                 self.ChangeLog(PlayerBruteIP)
 
     def createMalwareKit(self):

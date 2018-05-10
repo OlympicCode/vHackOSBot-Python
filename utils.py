@@ -6,16 +6,21 @@ import hashlib
 import time
 import requests
 
+from requests.exceptions import ReadTimeout
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import ssl
 import logging
 import json
 import ruamel.yaml as yaml
 from ruamel.yaml.scalarstring import SingleQuotedScalarString, DoubleQuotedScalarString
-import sys, os, platform
+import sys
+import os
+import platform
 import io
-import logging, coloredlogs
+import logging
+import coloredlogs
 import datetime
+import random
 from coloredterm import colored
 from time import gmtime, strftime
 try:
@@ -200,6 +205,7 @@ class Utils:
             return 0
 
     def account(self):
+      time.sleep(random.uniform(0.2, 0.5))
       return self.requestStringNowait("update.php", uID=self.uID, accesstoken=self.accessToken)
 
     def OutputTable(self, msg, select_tables):
@@ -244,7 +250,7 @@ class Utils:
           sys.exit()
         table1 = SingleTable(data)
         table2 = SingleTable(account_information)
-        time.sleep(0.3)
+        time.sleep(random.uniform(0.1, 0.3))
         if self.platform  == "Linux":
             print("\033[H\033[J")
         else:
@@ -287,7 +293,7 @@ Waiting for user input : """)
     Firewall: {}\n \
     Antivirus: {}".format(sdk, ipsp, bp, brute, spam, fw, av))
 
-                               time.sleep(1.5)
+                               time.sleep(0.5)
                             if ch == "m":
                               self.minefinish = int(self.account_info['minerLeft'])
                               sys.stdout.write("\nminerLeft {} in secondes".format(self.minefinish))
@@ -318,7 +324,7 @@ Waiting for user input : """)
      Firewall: {}\n \
      Antivirus: {}".format(sdk, ipsp, bp, brute, spam, fw, av))
 
-                                time.sleep(1.5)
+                                time.sleep(0.5)
                             if str(ch) == "m":
                               self.minefinish = int(self.account_info['minerLeft'])
                               sys.stdout.write("\nminerLeft {} in secondes".format(self.minefinish))
@@ -384,8 +390,12 @@ Waiting for user input : """)
                 self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection '{}'".format(url))
                 sys.exit()
 
+            except requests.exceptions.ReadTimeout:
+                self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+                sys.exit()
+
             except requests.exceptions.ConnectionError:
-                self.viewsPrint("ErorRequest", "Request Timeout... Connection Error '{}'".format(url))
+                self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}'".format(url))
                 sys.exit()
 
             result.encoding = 'UTF-8'
@@ -502,7 +512,7 @@ Waiting for user input : """)
 
     def requestString(self, php, **kwargs):
         # print("Request: {}, {}".format(php, self.uID))
-        self.user_agent = self.generateUA("testtest")
+        self.user_agent = self.generateUA("test{}test".format(random.randint(1, 9999)))
         try:
             if kwargs["debug"] is True:
                 time.sleep(self.timesleep)
@@ -530,7 +540,7 @@ Waiting for user input : """)
                 coloredlogs.install(level='DEBUG')
                 coloredlogs.install(level='DEBUG', logger=requests_log)
 
-        time.sleep(0.2)
+        time.sleep(random.uniform(0.5, 1))
         i = 0
         while True:
             if i > 10:
@@ -544,7 +554,7 @@ Waiting for user input : """)
                 self.sync_mobile
             except AttributeError:
                 print("\nError - Your account blocked. please wait")
-                for remaining in range(300, 0, -1):
+                for remaining in range(600, 0, -1):
                     sys.stdout.write("\r")
                     sys.stdout.write("{:2d} seconds remaining. number retry ({})".format(remaining, i))
                     sys.stdout.flush()
@@ -562,7 +572,11 @@ Waiting for user input : """)
                 try:
                     time.sleep(self.timesleep)
                     result = self.request.get(url_login, timeout=5, verify=False)
+
                 except requests.exceptions.ConnectTimeout:
+                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+
+                except requests.exceptions.ReadTimeout:
                     self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
 
@@ -592,6 +606,8 @@ Waiting for user input : """)
                 except requests.exceptions.ConnectTimeout:
                     self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
+                except requests.exceptions.ReadTimeout:
+                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ConnectionError:
                     self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
@@ -617,11 +633,12 @@ Waiting for user input : """)
                     result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
                 except requests.exceptions.ConnectTimeout:
                     self.viewsPrint("BadRequest", "Request Timeout... TimeOut connection {}".format(php))
-                    sys.exit()
+
+                except requests.exceptions.ReadTimeout:
+                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ConnectionError:
-                    self.viewsPrint("BadRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
-                    sys.exit()
+                    self.viewsPrint("BadRequest", "Request Timeout... Connection Error '{}'".format(php))
 
                 result.encoding = 'UTF-8'
                 try:
@@ -687,6 +704,9 @@ Waiting for user input : """)
                 except requests.exceptions.ConnectTimeout:
                     self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
+                except requests.exceptions.ReadTimeout:
+                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+
                 except requests.exceptions.ConnectionError:
                     self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format('login.php', url_login.status_code))
 
@@ -711,6 +731,9 @@ Waiting for user input : """)
                 except requests.exceptions.ConnectTimeout:
                     self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
+                except requests.exceptions.ReadTimeout:
+                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+
                 except requests.exceptions.ConnectionError:
                     self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
 
@@ -732,7 +755,11 @@ Waiting for user input : """)
                 # return just request don't login before.
                 try:
                     result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
+
                 except requests.exceptions.ConnectTimeout:
+                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+
+                except requests.exceptions.ReadTimeout:
                     self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ConnectionError:
@@ -742,7 +769,7 @@ Waiting for user input : """)
                 try:
                     parseJson = result.json()
                 except:
-                    time.sleep(3)
+                    time.sleep(random.uniform(0.5, 1.5))
                     result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
                     result.encoding = 'UTF-8'
                     parseJson = result.json()

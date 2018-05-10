@@ -38,7 +38,6 @@ class Update():
                 Appid = int(applications["appid"])
                 random.shuffle(self.Configuration["update"])
                 for list_update in self.Configuration["update"]:
-                    time.sleep(0.3)
                     application_update = int(p.getHelperApplication()[list_update]["appid"])
                     if money >= int(applications["price"]):
                         result = self.ut.requestString("store.php",
@@ -49,13 +48,10 @@ class Update():
                         if result['result'] == '0':
                             update = update+1
                             self.ut.viewsPrint("showMsgUpdate", "[{}] - Updated {} +1".format(os.path.basename(__file__), list_update))
-                            time.sleep(0.5)
                     else:
                         self.ut.viewsPrint("showMsgUpdate", "[{}] - you have not money to upgrade {}".format(os.path.basename(__file__), list_update))
-                        time.sleep(0.5)
             else:
                 self.ut.viewsPrint("showMsgUpdatefull", "[{}] - full task list, please wait.".format(os.path.basename(__file__)))
-                time.sleep(0.5)
                 # install application if level required < level
                 if int(applications["require"]) <= int(self.store["level"]) and int(applications["level"]) == 0:
                     result = self.ut.requestString("store.php",
