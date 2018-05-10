@@ -15,8 +15,8 @@ show_info: [All] # <- show the return bot print information
 # - ip_list -> if user exist in target bruteforce recollect money
 attack_mode: bank_scan
 
-uID: 364 # <- Automatically added uID for your account don't change /!\
-accessToken: 3800e16a932d5576414a71c827890c07 # <- Automatically added accessToken for your account don't change /!\
+uID: # <- Automatically added uID for your account don't change /!\
+accessToken: # <- Automatically added accessToken for your account don't change /!\
 update: [SDK, FW, AV, BP, IPSP]
 msgLog:
 timeSleep: 2 # <- Recommended minimal value 2
