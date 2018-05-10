@@ -206,7 +206,12 @@ class Utils:
 
     def account(self):
       time.sleep(random.uniform(0.2, 0.5))
-      return self.requestStringNowait("update.php", uID=self.uID, accesstoken=self.accessToken)
+      try:
+          return self.requestStringNowait("update.php", uID=self.uID, accesstoken=self.accessToken)
+      except requests.exceptions.ReadTimeout:
+          self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+          return None
+
 
     def OutputTable(self, msg, select_tables):
       if self.numberLoop < 6:
@@ -245,9 +250,9 @@ class Utils:
                                                                                                          "Your Antivirus ", self.account_info["av"],
                                                                                                          "Your BruteForce ", self.account_info["brute"],
                                                                                                          "Your level ", self.account_info["level"], round(progress*100, 1))]]
-        except KeyError:
+        except (KeyError, requests.exceptions.ReadTimeout):
           account_information = [["your account information", "update information"], ["Error", "Error"]]
-          sys.exit()
+
         table1 = SingleTable(data)
         table2 = SingleTable(account_information)
         time.sleep(random.uniform(0.1, 0.3))
@@ -554,7 +559,7 @@ Waiting for user input : """)
                 self.sync_mobile
             except AttributeError:
                 print("\nError - Your account blocked. please wait")
-                for remaining in range(600, 0, -1):
+                for remaining in range(500, 0, -1):
                     sys.stdout.write("\r")
                     sys.stdout.write("{:2d} seconds remaining. number retry ({})".format(remaining, i))
                     sys.stdout.flush()
@@ -655,12 +660,17 @@ Waiting for user input : """)
 
             i = i + 1
             if kwargs["debug"] is True:
-                logging.info(result.json())
+                logging.info(parseJson)
 
             if result:
                 break
 
-        return parseJson
+        if parseJson["result"] is not None or len(parseJson) > 1:
+            return parseJson
+        else:
+            self.viewsPrint("BadRequest", "/!\ Block Script your credential as changed")
+            exit(1)
+
 
     def requestStringNowait(self, php, **kwargs):
         # print("Request: {}, {}".format(php, self.uID))

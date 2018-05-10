@@ -16,6 +16,7 @@ class colored():
             #global message
             "ErrorRequest": Fore.RED,
             "ErrorJson": Fore.RED,
+            "BadRequest": Fore.RED,
 
             # update message
             "showMsgUpdatefull":  Fore.BLUE,
