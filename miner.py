@@ -14,7 +14,7 @@ class Miner():
     def runMiner(self):
         if 'minerLeft' in self.myinfo.keys():
             self.minefinish = int(self.myinfo['minerLeft'])
-            self.ut.viewsPrint("MinerMsgLeft", "minerLeft {}".format(self.minefinish))
+            self.ut.viewsPrint("MinerMsgLeft", "minerLeft ({}) secondes".format(self.minefinish))
         else:
             self.ut.viewsPrint("MinerMsgError", 'Unexpected myinfo string {}'.format(self.myinfo))
             sys.exit()
