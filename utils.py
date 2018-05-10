@@ -129,8 +129,8 @@ class Utils:
         self.account_info = None
         self.login = "0"
         try:
-            self.username = str(self.Configuration["username"])
-            self.password = str(self.Configuration["password"])
+            self.username = str(self.Configuration["username"]).lstrip()
+            self.password = str(self.Configuration["password"]).lstrip()
             self.debug = self.Configuration["debug"]
             self.show_info = self.Configuration["show_info"]
             self.sync_mobile = self.Configuration["sync_mobile"]
