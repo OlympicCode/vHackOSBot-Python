@@ -6,21 +6,18 @@ class Update():
     def __init__(self, ut):
         self.ut = ut
         self.Configuration = self.ut.readConfiguration()
-        self.store = self.ut.requestString("store.php",
-                                           accesstoken=self.Configuration["accessToken"])
         self.startFunctionUpdate()
 
     def startFunctionUpdate(self):
+        p = Player(self.ut)
 
         # get money info
-        if "money" in self.store and "apps" in self.store:
-            money = int(self.store["money"])
-            apps = self.store["apps"]
+        if "money" in p.getStore and "apps" in p.getStore:
+            money = int(p.getStore["money"])
+            apps = p.getStore["apps"]
         else:
             apps = []
             money = 0
-
-        p = Player(self.ut)
 
         getTask = self.ut.requestString("tasks.php", accesstoken=self.Configuration["accessToken"])
 
@@ -53,7 +50,7 @@ class Update():
             else:
                 self.ut.viewsPrint("showMsgUpdatefull", "[{}] - full task list, please wait.".format(os.path.basename(__file__)))
                 # install application if level required < level
-                if int(applications["require"]) <= int(self.store["level"]) and int(applications["level"]) == 0:
+                if int(applications["require"]) <= int(p.getStore["level"]) and int(applications["level"]) == 0:
                     result = self.ut.requestString("store.php",
                                                     accesstoken=self.Configuration["accessToken"],
                                                     appcode=applications["appid"],

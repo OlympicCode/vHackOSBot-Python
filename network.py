@@ -12,11 +12,14 @@ class Network():
                                                   accesstoken=self.Configuration["accessToken"])
         self.network = self.ut.requestString("network.php",
                                              accesstoken=self.Configuration["accessToken"], lang="en")
-        startFunctionAttack = self.startFunctionAttack()
-        if startFunctionAttack == True:
-            self.ut.viewsPrint("showMsgEndAttack", "[{}] - End Attack Loop Success.".format(os.path.basename(__file__)))
-        self.createMalwareKit()
-        self.RecoltMoney()
+
+
+        if self.Configuration["attack_mode"] == "ALl" or self.Configuration["attack_mode"] == "just_attack":
+            self.startFunctionAttack()
+
+        if self.Configuration["attack_mode"] == "ALl" or self.Configuration["attack_mode"] == "just_recolt":
+            self.createMalwareKit()
+            self.RecoltMoney()
 
     def startFunctionAttack(self):
         # collect information in network.
@@ -32,15 +35,19 @@ class Network():
             ip = str(info_player[0])
             firewall = int(info_player[1])
 
+            # currency calcule for attack
+            calc_attack = (firewall / int(p.getHelperApplication()["SDK"]["level"])) -1
+
             # define the rule for attack target
-            if firewall > int(p.getHelperApplication()["SDK"]["level"]):
+            if calc_attack >= 0.8:
                 # not possible to attack user if their firewall is too strong
-                self.ut.viewsPrint("showMsgDoesntPossibleAttack", "[{}] - Don't Attack Your SDK ({}) vs Target Firewall ({}) on ip : '{}' :(".format(os.path.basename(__file__),int(p.getHelperApplication()["SDK"]["level"]), firewall, ip))
+                self.ut.viewsPrint("showMsgDoesntPossibleAttack", "[{}] - Don't Attack Your SDK ({}) vs Target Firewall ({}) Match off ~({}%) on ip : '{}' :(".format(os.path.basename(__file__), int(p.getHelperApplication()["SDK"]["level"]), firewall, round(calc_attack*100), ip))
             else:
                 # attack ip if firewall enemy < your SDK
                 result = self.AttackTarget(ip)
                 if result == 0:
                     break
+        self.ut.viewsPrint("showMsgEndAttack", "[{}] - End Attack Loop Success.".format(os.path.basename(__file__)))
         return True
 
     def ChangeLog(self, ip):

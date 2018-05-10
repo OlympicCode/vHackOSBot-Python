@@ -1,5 +1,5 @@
-username:  # <- Your Username Account
-password:  # <- Tour Password Account
+username: # <- Your Username Account
+password: # <- Tour Password Account
 
 debug: false # <- debug mode dev online
 
@@ -9,14 +9,15 @@ sync_mobile: false # <- If your are uID and accessToken and your phone bot use c
 # exemple ['showMsgTotalBruteForceInfo'] <- just show Total Brute Force Information return bot print.
 show_info: [All] # <- show the return bot print information
 
-# attack mode it's method for attack the bot, attack in bank ip save, ip List, or attack new ip
-# - new -> -> if scan new user for attack
-# - bank_scan -> if scan user in bank
-# - ip_list -> if user exist in target bruteforce recollect money
-attack_mode: bank_scan
+# attack mode it's method for attack the bot
+# - all -> -> all method atack
+# - just_collect -> just collect money to your List bruteforce passed
+# - just_attack -> just add for new user player don't try to attack your bruteforce list
+attack_mode: all
 
 uID: # <- Automatically added uID for your account don't change /!\
 accessToken: # <- Automatically added accessToken for your account don't change /!\
-update: [SDK, FW, AV, BP, IPSP]
+update: [SDK, SDK, AV, BP, IPSP]
 msgLog:
-timeSleep: 2 # <- Recommended minimal value 2
+timeSleep: 1 # <- Recommended minimal value 2
+errorTime: ''

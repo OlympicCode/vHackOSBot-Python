@@ -46,7 +46,7 @@ class Player():
             # AntiVirus
             if int(allApplication["appid"]) == 1:
                 FinalApplication["AV"] = allApplication
-                
+
             # Firewall
             if int(allApplication["appid"]) == 2:
                 FinalApplication["FW"] = allApplication

@@ -133,6 +133,7 @@ class Utils:
         self.numberLoop = 0
         self.account_info = None
         self.login = "0"
+
         try:
             self.username = str(self.Configuration["username"]).lstrip()
             self.password = str(self.Configuration["password"]).lstrip()
@@ -143,6 +144,7 @@ class Utils:
             self.update = self.Configuration["update"]
             self.msgremotelog = self.Configuration["msgLog"]
             self.timesleep = self.Configuration["timeSleep"]
+            self.errorTime = self.Configuration["errorTime"]
         except KeyError as e:
             print("Error Configuration {}".format(e))
             sys.exit()
@@ -189,6 +191,13 @@ class Utils:
       self.viewsPrint("showResult", "Error: {} code: {}".format(result, code))
 
     def viewsPrint(self, condition, Msg):
+      if condition == "ErrorRequest":
+          self.add_error()
+          if self.Configuration["debug"]:
+            print(self.printConsole("\033[0;103m\033[1;30mOutputBot: {} - {}\033[0m".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg)))
+          else:
+            return self.OutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), colored(condition, self.printConsole(Msg)).autocolored()), 2)
+
       if condition in self.Configuration["show_info"] or "All" in self.Configuration["show_info"]:
             if "!{}".format(condition) in self.Configuration["show_info"]:
                 pass
@@ -209,9 +218,9 @@ class Utils:
       try:
           return self.requestStringNowait("update.php", uID=self.uID, accesstoken=self.accessToken)
       except requests.exceptions.ReadTimeout:
-          self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+          self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection")
+          self.generateConfiguration(errorTime=int(time.time()))
           return None
-
 
     def OutputTable(self, msg, select_tables):
       if self.numberLoop < 6:
@@ -358,7 +367,7 @@ Waiting for user input : """)
             ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
             return ansi_escape.sub('', txt)
 
-    def generateConfiguration(self, uID=False, accessToken=False):
+    def generateConfiguration(self, uID=False, accessToken=False, errorTime=False):
         # append uID/accessToken and other param in new configuration file.
         self.Configuration['username'] = self.username
         self.Configuration['password'] = self.password
@@ -369,6 +378,12 @@ Waiting for user input : """)
         self.Configuration['update'] = self.update
         self.Configuration["msgLog"] = self.msgremotelog
         self.Configuration["timeSleep"] = self.timesleep
+
+        if errorTime is not False:
+            self.Configuration["errorTime"] = errorTime
+        else:
+            self.Configuration["errorTime"] = ""
+
         # delete old file
         #os.remove("config.yml")
 
@@ -455,6 +470,18 @@ Waiting for user input : """)
                 with io.open('config.yml', 'wb') as outfile:
                     yaml.dump(self.Configuration, stream=outfile, default_flow_style=False,
                               Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
+
+    def add_error(self):
+        self.remove_error()
+        with open("config.yml", "a") as file:
+            file.write("errorTime: {}".format(int(time.time())+600))
+
+    def remove_error(self):
+        with open('config.yml', 'r+') as f:
+            f.seek(0, os.SEEK_END)
+            while f.tell() and f.read(1) != '\n':
+                f.seek(-2, os.SEEK_CUR)
+            f.truncate()
 
 
     def generateUA(self, identifier):
@@ -559,11 +586,20 @@ Waiting for user input : """)
                 self.sync_mobile
             except AttributeError:
                 print("\nError - Your account blocked. please wait")
-                for remaining in range(500, 0, -1):
-                    sys.stdout.write("\r")
-                    sys.stdout.write("{:2d} seconds remaining. number retry ({})".format(remaining, i))
-                    sys.stdout.flush()
-                    time.sleep(1)
+                try:
+                    error_time = self.errorTime - int(time.time())
+                except:
+                    error_time = 600
+
+                if error_time > 0:
+                    for remaining in range(error_time, 0, -1):
+                        sys.stdout.write("\r")
+                        sys.stdout.write("{:2d} seconds remaining. number retry ({})".format(remaining, i))
+                        sys.stdout.flush()
+                        time.sleep(1)
+                        self.add_error()
+                self.remove_error()
+
                 i = i + 1
                 python = sys.executable
                 os.execl(python, python, * sys.argv)
@@ -583,7 +619,6 @@ Waiting for user input : """)
 
                 except requests.exceptions.ReadTimeout:
                     self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
-
 
                 except requests.exceptions.ConnectionError:
                     self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format('login.php', url_login.status_code))

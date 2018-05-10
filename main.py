@@ -16,7 +16,6 @@ class run():
         network = Network(ut)
         miner = Miner(ut)
 
-
 if __name__ == '__main__':
     ut = Utils()
     try:

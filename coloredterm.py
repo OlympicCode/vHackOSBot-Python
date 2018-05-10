@@ -17,6 +17,7 @@ class colored():
             "ErrorRequest": Fore.RED,
             "ErrorJson": Fore.RED,
             "BadRequest": Fore.RED,
+			"showResult": Fore.RED,
 
             # update message
             "showMsgUpdatefull":  Fore.BLUE,
