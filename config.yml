@@ -13,7 +13,7 @@ show_info: [All] # <- show the return bot print information
 # - all -> -> all method atack
 # - just_collect -> just collect money to your List bruteforce passed
 # - just_attack -> just add for new user player don't try to attack your bruteforce list
-attack_mode: all
+attack_mode: All
 
 uID: # <- Automatically added uID for your account don't change /!\
 accessToken: # <- Automatically added accessToken for your account don't change /!\
