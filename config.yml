@@ -1,23 +1,24 @@
-username: # <- Your Username Account
-password: # <- Tour Password Account
+username: # < Your Username Account
+password: # < Tour Password Account
 
-debug: false # <- debug mode dev online
+debug: false # < debug mode dev online
 
-sync_mobile: false # <- If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone. (Recommended OFF)
+sync_mobile: false # < If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone. (Recommended OFF)
 
-# exemple ['All', '!showMsgTotalBruteForceInfo'] <- show all but don't show Total Brute Force Information return bot print.
-# exemple ['showMsgTotalBruteForceInfo'] <- just show Total Brute Force Information return bot print.
-show_info: [All] # <- show the return bot print information
+# exemple ['All', '!showMsgTotalBruteForceInfo'] < show all but don't show Total Brute Force Information return bot print.
+# exemple ['showMsgTotalBruteForceInfo'] < just show Total Brute Force Information return bot print.
+show_info: [All] # < show the return bot print information
 
 # attack mode it's method for attack the bot
-# - all -> -> all method atack
-# - just_collect -> just collect money to your List bruteforce passed
-# - just_attack -> just add for new user player don't try to attack your bruteforce list
+# ~ all > all method atack
+# ~ just_collect > just collect money to your List bruteforce passed
+# ~ just_attack > just add for new user player don't try to attack your bruteforce list
 attack_mode: All
 
-uID: # <- Automatically added uID for your account don't change /!\
-accessToken: # <- Automatically added accessToken for your account don't change /!\
+uID: # < Automatically added uID for your account don't change /!\
+accessToken: # < Automatically added accessToken for your account don't change /!\
 update: [SDK, SDK, AV, BP, IPSP]
 msgLog:
-timeSleep: 1 # <- Recommended minimal value 2
-errorTime: ''
+timeSleep: 1 # < Recommended minimal value 2
+version: 2.3.2
+errorTime:
