@@ -215,7 +215,7 @@ class Utils:
                 print(self.printConsole("\033[0;103m\033[1;30mOutputBot: {} - {}\033[0m".format(
                     strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg)))
             else:
-                return self.bOutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), colored(condition, self.printConsole(Msg)).autocolored()), 2)
+                return self.OutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), colored(condition, self.printConsole(Msg)).autocolored()), 2)
 
         if condition in self.Configuration["show_info"] or "All" in self.Configuration["show_info"]:
             if "!{}".format(condition) in self.Configuration["show_info"]:
