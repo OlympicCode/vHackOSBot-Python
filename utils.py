@@ -183,11 +183,11 @@ class Utils:
     def check_version(self):
         r = requests.get("https://raw.githubusercontent.com/OlympicCode/vHackOSBot-Python/master/config.yml")
         for line in r.iter_lines():
-            if "version:" in line:
-                version = line.split(":")[1]
+            if "version:" in str(line):
+                version = str(line).split(":")[1].replace("'", "")
                 break
 
-        if version.lstrip() != self.version.lstrip():
+        if version.lstrip() != str(self.version.lstrip()):
             print("Please update your bot on github.")
             exit(1)
 
