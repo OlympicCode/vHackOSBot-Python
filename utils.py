@@ -57,6 +57,7 @@ def raw_mode(file):
         finally:
             termios.tcsetattr(file.fileno(), termios.TCSADRAIN, old_attrs)
 
+
 def set_default(obj):
     if isinstance(obj, set):
         return list(obj)
@@ -145,18 +146,21 @@ class Utils:
             self.msgremotelog = self.Configuration["msgLog"]
             self.timesleep = self.Configuration["timeSleep"]
             self.errorTime = self.Configuration["errorTime"]
+            self.version = self.Configuration["version"]
         except KeyError as e:
             print("Error Configuration {}".format(e))
             sys.exit()
         if self.username is None or self.password is None:
-          print("please Change Username/Password to config.yml")
-          sys.exit()
+            print("please Change Username/Password to config.yml")
+            sys.exit()
         self.user_agent = self.generateUA(self.username + self.password)
-        self.all_data = [['Console Log vHackOS - by vBlackOut  [https://github.com/vBlackOut]']]
+        self.all_data = [
+            ['Console Log vHackOS - by vBlackOut  [https://github.com/vBlackOut]']]
 
         try:
             if self.sync_mobile:
-                self.generateConfiguration(uID=self.Configuration["uID"], accessToken=self.Configuration["accessToken"])
+                self.generateConfiguration(
+                    uID=self.Configuration["uID"], accessToken=self.Configuration["accessToken"])
             else:
                 self.generateConfiguration()
         except TypeError:
@@ -176,36 +180,52 @@ class Utils:
         except KeyError:
             self.uID = None
 
-    def readConfiguration(self):
-      # open configuration
-      with open("config.yml", 'r') as stream:
-          try:
-              Configuration = yaml.load(stream, Loader=yaml.RoundTripLoader)
-          except yaml.YAMLError as exc:
-              self.viewsPrint("ErrorConfiguration", "{} [{}]".format("Error in your config.yml please check in", exc))
-              sys.exit()
+    def check_version(self):
+        r = requests.get("https://raw.githubusercontent.com/OlympicCode/vHackOSBot-Python/master/config.yml")
+        for line in r.iter_lines():
+            if "version:" in line:
+                version = line.split(":")[1]
+                break
 
-      if Configuration:
-          return Configuration
+        if version.lstrip() != self.version.lstrip():
+            print("Please update your bot on github.")
+            exit(1)
+
+    def readConfiguration(self):
+        # open configuration
+        with open("config.yml", 'r') as stream:
+            try:
+                Configuration = yaml.load(stream, Loader=yaml.RoundTripLoader)
+            except yaml.YAMLError as exc:
+                self.viewsPrint("ErrorConfiguration", "{} [{}]".format(
+                    "Error in your config.yml please check in", exc))
+                sys.exit()
+
+        if Configuration:
+            return Configuration
+
     def result(self, result, code):
-      self.viewsPrint("showResult", "Error: {} code: {}".format(result, code))
+        self.viewsPrint(
+            "showResult", "Error: {} code: {}".format(result, code))
 
     def viewsPrint(self, condition, Msg):
-      if condition == "ErrorRequest":
-          self.add_error()
-          if self.Configuration["debug"]:
-            print(self.printConsole("\033[0;103m\033[1;30mOutputBot: {} - {}\033[0m".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg)))
-          else:
-            return self.OutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), colored(condition, self.printConsole(Msg)).autocolored()), 2)
+        if condition == "ErrorRequest":
+            self.add_error()
+            if self.Configuration["debug"]:
+                print(self.printConsole("\033[0;103m\033[1;30mOutputBot: {} - {}\033[0m".format(
+                    strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg)))
+            else:
+                return self.bOutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), colored(condition, self.printConsole(Msg)).autocolored()), 2)
 
-      if condition in self.Configuration["show_info"] or "All" in self.Configuration["show_info"]:
+        if condition in self.Configuration["show_info"] or "All" in self.Configuration["show_info"]:
             if "!{}".format(condition) in self.Configuration["show_info"]:
                 pass
             else:
-              if self.Configuration["debug"]:
-                print(self.printConsole("\033[0;103m\033[1;30mOutputBot: {} - {}\033[0m".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg)))
-              else:
-                return self.OutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), colored(condition, self.printConsole(Msg)).autocolored()), 2)
+                if self.Configuration["debug"]:
+                    print(self.printConsole("\033[0;103m\033[1;30mOutputBot: {} - {}\033[0m".format(
+                        strftime("%Y-%m-%d %H:%M:%S", gmtime()), Msg)))
+                else:
+                    return self.OutputTable("OutputBot: {} - {}".format(strftime("%Y-%m-%d %H:%M:%S", gmtime()), colored(condition, self.printConsole(Msg)).autocolored()), 2)
 
     def exploit(self):
         try:
@@ -214,91 +234,111 @@ class Utils:
             return 0
 
     def account(self):
-      time.sleep(random.uniform(0.2, 0.5))
-      try:
-          return self.requestStringNowait("update.php", uID=self.uID, accesstoken=self.accessToken)
-      except requests.exceptions.ReadTimeout:
-          self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection")
-          self.generateConfiguration(errorTime=int(time.time()))
-          return None
+        time.sleep(random.uniform(0.2, 0.5))
+        try:
+            return self.requestStringNowait("update.php", uID=self.uID, accesstoken=self.accessToken)
+        except requests.exceptions.ReadTimeout:
+            self.viewsPrint(
+                "ErrorRequest", "Request Timeout... TimeOut connection")
+            self.generateConfiguration(errorTime=int(time.time()))
+            return None
 
     def OutputTable(self, msg, select_tables):
-      if self.numberLoop < 6:
-          self.numberLoop = self.numberLoop + 1
-      else:
-          self.numberLoop = 0
+        if self.numberLoop < 6:
+            self.numberLoop = self.numberLoop + 1
+        else:
+            self.numberLoop = 0
 
-      if len(self.all_data) > 6:
-        del self.all_data[-6]
-      self.all_data.append([msg])
-      data = self.all_data
+        if len(self.all_data) > 6:
+            del self.all_data[-6]
+        self.all_data.append([msg])
+        data = self.all_data
 
-      if select_tables == 1:
-        table = AsciiTable(data)
-        print(table.table)
+        if select_tables == 1:
+            table = AsciiTable(data)
+            print(table.table)
 
-      elif select_tables == 2:
-        try:
-            self.account_info = self.requestString("update.php", accesstoken=self.Configuration["accessToken"])
-            self.exploits = int(self.account_info["exploits"])
-            progress = round(int(self.account_info["exp"]))/round(int(self.account_info["expreq"]))
+        elif select_tables == 2:
+            try:
+                self.account_info = self.requestString(
+                    "update.php", accesstoken=self.Configuration["accessToken"])
+                self.exploits = int(self.account_info["exploits"])
+                progress = round(
+                    int(self.account_info["exp"])) / round(int(self.account_info["expreq"]))
 
-            self.account_info["money"] = '{:0,}'.format(int(self.account_info["money"]))
-            self.account_info["netcoins"] = '{:0,}'.format(int(self.account_info["netcoins"]))
+                self.account_info["money"] = '{:0,}'.format(
+                    int(self.account_info["money"]))
+                self.account_info["netcoins"] = '{:0,}'.format(
+                    int(self.account_info["netcoins"]))
 
-            account_information = [["your account information", "update information"],
-                                   ["{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}\n{10}: {11}".format("Your exploits ", self.exploits,
-                                                                                                              "Your spam ", self.account_info["spam"],
-                                                                                                              "Your network speed ", self.account_info["inet"],
-                                                                                                              "Your money ", self.account_info["money"],
-                                                                                                              "Your IP ", self.account_info["ipaddress"],
+                account_information = [["your account information", "update information"],
+                                       ["{0}: {1}\n{2}: {3}\n{4}: {5}\n{6}: {7}\n{8}: {9}\n{10}: {11}".format("Your exploits ", self.exploits,
+                                                                                                              "Your spam ", self.account_info[
+                                                                                                                  "spam"],
+                                                                                                              "Your network speed ", self.account_info[
+                                                                                                                  "inet"],
+                                                                                                              "Your money ", self.account_info[
+                                                                                                                  "money"],
+                                                                                                              "Your IP ", self.account_info[
+                                                                                                                  "ipaddress"],
                                                                                                               "Your netcoins ", self.account_info["netcoins"]),
 
-                                   "{}: {}\n{}: {}\n{}: {}\n{}: {}\n{}: {}, XP({}%)".format("Your SDK ", self.account_info["sdk"],
-                                                                                                         "Your Firewall ", self.account_info["fw"],
-                                                                                                         "Your Antivirus ", self.account_info["av"],
-                                                                                                         "Your BruteForce ", self.account_info["brute"],
-                                                                                                         "Your level ", self.account_info["level"], round(progress*100, 1))]]
-        except (KeyError, requests.exceptions.ReadTimeout):
-          account_information = [["your account information", "update information"], ["Error", "Error"]]
+                                        "{}: {}\n{}: {}\n{}: {}\n{}: {}\n{}: {}, XP({}%)".format("Your SDK ", self.account_info["sdk"],
+                                                                                                 "Your Firewall ", self.account_info[
+                                                                                                     "fw"],
+                                                                                                 "Your Antivirus ", self.account_info[
+                                            "av"],
+                                           "Your BruteForce ", self.account_info[
+                                            "brute"],
+                                           "Your level ", self.account_info["level"], round(progress * 100, 1))]]
+            except (KeyError, requests.exceptions.ReadTimeout):
+                account_information = [
+                    ["your account information", "update information"], ["Error", "Error"]]
 
-        table1 = SingleTable(data)
-        table2 = SingleTable(account_information)
-        time.sleep(random.uniform(0.1, 0.3))
-        if self.platform  == "Linux":
-            print("\033[H\033[J")
-        else:
-            os.system('cls')
+            table1 = SingleTable(data)
+            table2 = SingleTable(account_information)
+            time.sleep(random.uniform(0.1, 0.3))
+            if self.platform == "Linux":
+                print("\033[H\033[J")
+            else:
+                os.system('cls')
 
-
-        req_version = (3,0)
-        cur_version = sys.version_info
-        # for windows Try to print tables else pass python 2
-        try:
-            print(table1.table)
-            print(table2.table)
-            if windows is False:
-                sys.stdout.write("""\nCMD: [m] Get Miner info
+            req_version = (3, 0)
+            cur_version = sys.version_info
+            # for windows Try to print tables else pass python 2
+            try:
+                print(table1.table)
+                print(table2.table)
+                if windows is False:
+                    sys.stdout.write("""\nCMD: [m] Get Miner info
      [a] Get All applications
      [q] Quit Program
 
 Waiting for user input : """)
-                with raw_mode(sys.stdin):
-                    try:
-                      if cur_version <= req_version:
-                        while True:
-                            ch = sys.stdin.read(1)
-                            if ch == "a":
-                               p = Player(self)
-                               getTask = self.requestString("tasks.php", accesstoken=self.Configuration["accessToken"])
-                               sdk = p.getHelperApplication()["SDK"]["level"]
-                               ipsp = p.getHelperApplication()["IPSP"]["level"]
-                               bp = p.getHelperApplication()["BP"]["level"]
-                               brute = p.getHelperApplication()["BRUTE"]["level"]
-                               spam = p.getHelperApplication()["SPAM"]["level"]
-                               fw = p.getHelperApplication()["FW"]["level"]
-                               av = p.getHelperApplication()["AV"]["level"]
-                               sys.stdout.write("\n \
+                    with raw_mode(sys.stdin):
+                        try:
+                            if cur_version <= req_version:
+                                while True:
+                                    ch = sys.stdin.read(1)
+                                    if ch == "a":
+                                        p = Player(self)
+                                        getTask = self.requestString(
+                                            "tasks.php", accesstoken=self.Configuration["accessToken"])
+                                        sdk = p.getHelperApplication()[
+                                            "SDK"]["level"]
+                                        ipsp = p.getHelperApplication()[
+                                            "IPSP"]["level"]
+                                        bp = p.getHelperApplication()[
+                                            "BP"]["level"]
+                                        brute = p.getHelperApplication()[
+                                            "BRUTE"]["level"]
+                                        spam = p.getHelperApplication()[
+                                            "SPAM"]["level"]
+                                        fw = p.getHelperApplication()[
+                                            "FW"]["level"]
+                                        av = p.getHelperApplication()[
+                                            "AV"]["level"]
+                                        sys.stdout.write("\n \
     SDK: {} \
     IPSP: {}\n \
     Bank Protect: {} \
@@ -307,29 +347,41 @@ Waiting for user input : """)
     Firewall: {}\n \
     Antivirus: {}".format(sdk, ipsp, bp, brute, spam, fw, av))
 
-                               time.sleep(0.5)
-                            if ch == "m":
-                              self.minefinish = int(self.account_info['minerLeft'])
-                              sys.stdout.write("\nminerLeft {} in secondes".format(self.minefinish))
-                              sys.stdout.write("\nwaiting until {} --- {}".format(self.tuntin(self.minefinish), datetime.timedelta(seconds=(self.minefinish))))
-                              time.sleep(1)
-                            if ch == "q":
-                              sys.stdout.write("\nok ok, good bye ;)\n")
-                              sys.exit()
-                      else:
-                        while True:
-                            ch = sys.stdin.read(1)
-                            if ch == "a":
-                                p = Player(self)
-                                getTask = self.requestString("tasks.php", accesstoken=self.Configuration["accessToken"])
-                                sdk = p.getHelperApplication()["SDK"]["level"]
-                                ipsp = p.getHelperApplication()["IPSP"]["level"]
-                                bp = p.getHelperApplication()["BP"]["level"]
-                                brute = p.getHelperApplication()["BRUTE"]["level"]
-                                spam = p.getHelperApplication()["SPAM"]["level"]
-                                fw = p.getHelperApplication()["FW"]["level"]
-                                av = p.getHelperApplication()["AV"]["level"]
-                                sys.stdout.write("\n \
+                                        time.sleep(0.5)
+                                    if ch == "m":
+                                        self.minefinish = int(
+                                            self.account_info['minerLeft'])
+                                        sys.stdout.write(
+                                            "\nminerLeft {} in secondes".format(self.minefinish))
+                                        sys.stdout.write("\nwaiting until {} --- {}".format(self.tuntin(
+                                            self.minefinish), datetime.timedelta(seconds=(self.minefinish))))
+                                        time.sleep(1)
+                                    if ch == "q":
+                                        sys.stdout.write(
+                                            "\nok ok, good bye ;)\n")
+                                        sys.exit()
+                            else:
+                                while True:
+                                    ch = sys.stdin.read(1)
+                                    if ch == "a":
+                                        p = Player(self)
+                                        getTask = self.requestString(
+                                            "tasks.php", accesstoken=self.Configuration["accessToken"])
+                                        sdk = p.getHelperApplication()[
+                                            "SDK"]["level"]
+                                        ipsp = p.getHelperApplication()[
+                                            "IPSP"]["level"]
+                                        bp = p.getHelperApplication()[
+                                            "BP"]["level"]
+                                        brute = p.getHelperApplication()[
+                                            "BRUTE"]["level"]
+                                        spam = p.getHelperApplication()[
+                                            "SPAM"]["level"]
+                                        fw = p.getHelperApplication()[
+                                            "FW"]["level"]
+                                        av = p.getHelperApplication()[
+                                            "AV"]["level"]
+                                        sys.stdout.write("\n \
      SDK: {} \
      IPSP: {}\n \
      Bank Protect: {} \
@@ -338,20 +390,24 @@ Waiting for user input : """)
      Firewall: {}\n \
      Antivirus: {}".format(sdk, ipsp, bp, brute, spam, fw, av))
 
-                                time.sleep(0.5)
-                            if str(ch) == "m":
-                              self.minefinish = int(self.account_info['minerLeft'])
-                              sys.stdout.write("\nminerLeft {} in secondes".format(self.minefinish))
-                              sys.stdout.write("\nwaiting until {} --- {}".format(self.tuntin(self.minefinish), datetime.timedelta(seconds=(self.minefinish))))
-                              time.sleep(1)
-                            if ch == "q":
-                              sys.stdout.write("\nok ok, good bye ;)\n")
-                              sys.exit()
-                            break
-                    except (KeyboardInterrupt, EOFError):
-                        pass
-        except IOError as e:
-          pass
+                                        time.sleep(0.5)
+                                    if str(ch) == "m":
+                                        self.minefinish = int(
+                                            self.account_info['minerLeft'])
+                                        sys.stdout.write(
+                                            "\nminerLeft {} in secondes".format(self.minefinish))
+                                        sys.stdout.write("\nwaiting until {} --- {}".format(self.tuntin(
+                                            self.minefinish), datetime.timedelta(seconds=(self.minefinish))))
+                                        time.sleep(1)
+                                    if ch == "q":
+                                        sys.stdout.write(
+                                            "\nok ok, good bye ;)\n")
+                                        sys.exit()
+                                    break
+                        except (KeyboardInterrupt, EOFError):
+                            pass
+            except IOError as e:
+                pass
 
     def tuntin(self, secs):
         st = (datetime.datetime.now() + datetime.timedelta(seconds=300))
@@ -378,20 +434,20 @@ Waiting for user input : """)
         self.Configuration['update'] = self.update
         self.Configuration["msgLog"] = self.msgremotelog
         self.Configuration["timeSleep"] = self.timesleep
+        self.Configuration["version"] = self.version
 
         if errorTime is not False:
             self.Configuration["errorTime"] = errorTime
         else:
-            self.Configuration["errorTime"] = ""
+            self.Configuration["errorTime"] = None
 
         # delete old file
-        #os.remove("config.yml")
+        # os.remove("config.yml")
 
         try:
             self.Configuration['uID'] = uID
         except KeyError:
             self.Configuration['uID'] = self.uID
-
 
         try:
             self.Configuration['accessToken'] = accessToken
@@ -407,15 +463,18 @@ Waiting for user input : """)
             try:
                 result = self.request.get(url_login, timeout=5, verify=False)
             except requests.exceptions.ConnectTimeout:
-                self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection '{}'".format(url))
+                self.viewsPrint(
+                    "ErrorRequest", "Request Timeout... TimeOut connection '{}'".format(url))
                 sys.exit()
 
             except requests.exceptions.ReadTimeout:
-                self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+                self.viewsPrint(
+                    "ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
                 sys.exit()
 
             except requests.exceptions.ConnectionError:
-                self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}'".format(url))
+                self.viewsPrint(
+                    "ErrorRequest", "Request Timeout... Connection Error '{}'".format(url))
                 sys.exit()
 
             result.encoding = 'UTF-8'
@@ -423,46 +482,61 @@ Waiting for user input : """)
 
             check_return_server = self.CheckServerError(parseJson)
             if check_return_server:
-                print("Server Error: [{}] {}".format(check_return_server[0], check_return_server[1]))
+                print("Server Error: [{}] {}".format(
+                    check_return_server[0], check_return_server[1]))
                 return False
 
             self.accessToken = str(parseJson["accesstoken"])
             self.uID = int(parseJson["uid"].encode("UTF-8"))
 
-            self.Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- Your Password Account\n\n", 'password', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- debug mode\n\n", 'debug', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- show the return bot print information\n\n", 'show_info', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone. (Recommended OFF)\n\n", 'sync_mobile', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- Automatically added uID for your account don't change /!\\", 'uID', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- Automatically added accessToken for your account don't change /!\\", 'accessToken', column=5)
+            self.Configuration.yaml_add_eol_comment(
+                "# < Your Username Account", 'username', column=5)
+            self.Configuration.yaml_add_eol_comment(
+                "# < Your Password Account\n\n", 'password', column=5)
+            self.Configuration.yaml_add_eol_comment(
+                "# < debug mode\n\n", 'debug', column=5)
+            self.Configuration.yaml_add_eol_comment(
+                "# < show the return bot print information\n\n", 'show_info', column=5)
+            self.Configuration.yaml_add_eol_comment(
+                "# < If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone. (Recommended OFF)\n\n", 'sync_mobile', column=5)
+            self.Configuration.yaml_add_eol_comment(
+                "# < Automatically added uID for your account don't change /!\\", 'uID', column=5)
+            self.Configuration.yaml_add_eol_comment(
+                "# < Automatically added accessToken for your account don't change /!\\", 'accessToken', column=5)
 
             try:
-              # for python 3
+                # for python 3
                 with io.open('config.yml', 'w+') as outfile:
-                  yaml.dump(self.Configuration, stream=outfile, default_flow_style=False,
-                            Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
+                    yaml.dump(self.Configuration, stream=outfile, default_flow_style=False,
+                              Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
             except:
-              # for python 2
+                # for python 2
                 with io.open('config.yml', 'wb') as outfile:
-                  yaml.dump(self.Configuration, stream=outfile, default_flow_style=False,
-                            Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
+                    yaml.dump(self.Configuration, stream=outfile, default_flow_style=False,
+                              Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
 
             self.request = None
 
         else:
 
-            self.Configuration.yaml_add_eol_comment("# <- Your Username Account", 'username', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- Tour Password Account\n\n", 'password', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- debug mode dev online\n\n", 'debug', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- show the return bot print information\n\n", 'show_info', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone. (Recommended OFF)\n\n", 'sync_mobile', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- Automatically added uID for your account don't change /!\\", 'uID', column=5)
-            self.Configuration.yaml_add_eol_comment("# <- Automatically added accessToken for your account don't change /!\\", 'accessToken', column=5)
+            self.Configuration.yaml_add_eol_comment(
+                "# < Your Username Account", 'username', column=5)
+            self.Configuration.yaml_add_eol_comment(
+                "# < Tour Password Account\n\n", 'password', column=5)
+            self.Configuration.yaml_add_eol_comment(
+                "# < debug mode dev online\n\n", 'debug', column=5)
+            self.Configuration.yaml_add_eol_comment(
+                "# < show the return bot print information\n\n", 'show_info', column=5)
+            self.Configuration.yaml_add_eol_comment(
+                "# < If your are uID and accessToken and your phone bot use configuration for login please replace your uid and accesstoken sync to phone. (Recommended OFF)\n\n", 'sync_mobile', column=5)
+            self.Configuration.yaml_add_eol_comment(
+                "# < Automatically added uID for your account don't change /!\\", 'uID', column=5)
+            self.Configuration.yaml_add_eol_comment(
+                "# < Automatically added accessToken for your account don't change /!\\", 'accessToken', column=5)
 
             try:
-              # for python 3
-                with io.open('config.yml', 'w') as outfile:
+                # for python 3
+                with io.open('config.yml', 'w+') as outfile:
                     yaml.dump(self.Configuration, stream=outfile, default_flow_style=False,
                               Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=1)
             except:
@@ -474,7 +548,7 @@ Waiting for user input : """)
     def add_error(self):
         self.remove_error()
         with open("config.yml", "a") as file:
-            file.write("errorTime: {}".format(int(time.time())+600))
+            file.write("errorTime: {}".format(int(time.time()) + 600))
 
     def remove_error(self):
         with open('config.yml', 'r+') as f:
@@ -482,7 +556,6 @@ Waiting for user input : """)
             while f.tell() and f.read(1) != '\n':
                 f.seek(-2, os.SEEK_CUR)
             f.truncate()
-
 
     def generateUA(self, identifier):
         pick = int(self.md5hash(identifier), 16)
@@ -515,7 +588,8 @@ Waiting for user input : """)
 
     def generateURL(self, uid, php, **kwargs):
         jsonString = kwargs
-        jsonString.update({'uid': str(self.uID), 'accesstoken': str(self.accessToken)})
+        jsonString.update(
+            {'uid': str(self.uID), 'accesstoken': str(self.accessToken)})
         jsonString.pop("debug", None)
         jsonString = json.dumps(jsonString, default=set_default)
         str8 = self.md5hash("{}{}{}".format(jsonString, jsonString,
@@ -525,9 +599,9 @@ Waiting for user input : """)
 
     def CheckServerError(self, code_return):
         try:
-          code_return = code_return["result"]
+            code_return = code_return["result"]
         except (TypeError, IndexError):
-          code_return = "0"
+            code_return = "0"
 
         t = None
         if code_return == u"5":
@@ -544,7 +618,8 @@ Waiting for user input : """)
 
     def requestString(self, php, **kwargs):
         # print("Request: {}, {}".format(php, self.uID))
-        self.user_agent = self.generateUA("test{}test".format(random.randint(1, 9999)))
+        self.user_agent = self.generateUA(
+            "test{}test".format(random.randint(1, 9999)))
         try:
             if kwargs["debug"] is True:
                 time.sleep(self.timesleep)
@@ -576,7 +651,8 @@ Waiting for user input : """)
         i = 0
         while True:
             if i > 10:
-                self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+                self.viewsPrint(
+                    "ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
                 sys.exit()
 
             try:
@@ -594,7 +670,8 @@ Waiting for user input : """)
                 if error_time > 0:
                     for remaining in range(error_time, 0, -1):
                         sys.stdout.write("\r")
-                        sys.stdout.write("{:2d} seconds remaining. number retry ({})".format(remaining, i))
+                        sys.stdout.write(
+                            "{:2d} seconds remaining. number retry ({})".format(remaining, i))
                         sys.stdout.flush()
                         time.sleep(1)
                         self.add_error()
@@ -609,20 +686,24 @@ Waiting for user input : """)
                 # connect login.
                 self.request = requests.Session()
                 self.request.headers.update({'User-agent': self.user_agent})
-                url_login = self.Login('login.php', self.username, self.password)
+                url_login = self.Login(
+                    'login.php', self.username, self.password)
                 try:
                     time.sleep(self.timesleep)
-                    result = self.request.get(url_login, timeout=5, verify=False)
+                    result = self.request.get(
+                        url_login, timeout=5, verify=False)
 
                 except requests.exceptions.ConnectTimeout:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint(
+                        "ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ReadTimeout:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint(
+                        "ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ConnectionError:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format('login.php', url_login.status_code))
-
+                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(
+                        'login.php', url_login.status_code))
 
                 result.encoding = 'UTF-8'
                 parseJson = result.json()
@@ -630,7 +711,8 @@ Waiting for user input : """)
                 check_return_server = self.CheckServerError(parseJson)
 
                 if check_return_server:
-                    print("Server Error: [{}] {}".format(check_return_server[0], check_return_server[1]))
+                    print("Server Error: [{}] {}".format(
+                        check_return_server[0], check_return_server[1]))
                     return False
 
                 self.accessToken = str(parseJson["accesstoken"])
@@ -642,16 +724,19 @@ Waiting for user input : """)
 
                 # Create First request.
                 try:
-                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
+                    result = self.request.get(self.generateURL(
+                        self.uID, php, **kwargs), timeout=5)
                 except requests.exceptions.ConnectTimeout:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint(
+                        "ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ReadTimeout:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint(
+                        "ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ConnectionError:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
-
+                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(
+                        php, url_login.status_code))
 
                 if kwargs["debug"] is True:
                     logging.info(result.json())
@@ -659,33 +744,39 @@ Waiting for user input : """)
             elif self.uID is not None or self.accessToken is not None:
                 #request = requests.Session()
                 if not self.request:
-                  self.request = requests.Session()
+                    self.request = requests.Session()
 
                 self.request.headers.update({'User-agent': self.user_agent})
 
                 if self.sync_mobile is True:
                     if self.login is "0":
                         self.login = "1"
-                        self.request.get(self.generateURL(self.uID, 'update.php', accesstoken=self.accessToken, lang="fr", lastread="0"), timeout=3)
+                        self.request.get(self.generateURL(
+                            self.uID, 'update.php', accesstoken=self.accessToken, lang="fr", lastread="0"), timeout=3)
 
                 # return just request don't login before.
                 try:
-                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
+                    result = self.request.get(self.generateURL(
+                        self.uID, php, **kwargs), timeout=5)
                 except requests.exceptions.ConnectTimeout:
-                    self.viewsPrint("BadRequest", "Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint(
+                        "BadRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ReadTimeout:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint(
+                        "ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ConnectionError:
-                    self.viewsPrint("BadRequest", "Request Timeout... Connection Error '{}'".format(php))
+                    self.viewsPrint(
+                        "BadRequest", "Request Timeout... Connection Error '{}'".format(php))
 
                 result.encoding = 'UTF-8'
                 try:
                     parseJson = result.json()
                     result = True
                 except ValueError:
-                    self.viewsPrint("ErrorJson", "Closing bot upon bad request...")
+                    self.viewsPrint(
+                        "ErrorJson", "Closing bot upon bad request...")
                     time.sleep(5)
 
                 try:
@@ -703,9 +794,9 @@ Waiting for user input : """)
         if parseJson["result"] is not None or len(parseJson) > 1:
             return parseJson
         else:
-            self.viewsPrint("BadRequest", "/!\ Block Script your credential as changed")
+            self.viewsPrint(
+                "BadRequest", "/!\ Block Script your credential as changed")
             exit(1)
-
 
     def requestStringNowait(self, php, **kwargs):
         # print("Request: {}, {}".format(php, self.uID))
@@ -743,25 +834,31 @@ Waiting for user input : """)
                 # connect login.
                 self.request = requests.Session()
                 self.request.headers.update({'User-agent': self.user_agent})
-                url_login = self.Login('login.php', self.username, self.password)
+                url_login = self.Login(
+                    'login.php', self.username, self.password)
                 try:
-                    result = self.request.get(url_login, timeout=3, verify=False)
+                    result = self.request.get(
+                        url_login, timeout=3, verify=False)
                 except requests.exceptions.ConnectTimeout:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint(
+                        "ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ReadTimeout:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint(
+                        "ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ConnectionError:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format('login.php', url_login.status_code))
+                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(
+                        'login.php', url_login.status_code))
 
                 result.encoding = 'UTF-8'
                 parseJson = result.json()
 
                 check_return_server = self.CheckServerError(parseJson)
                 if check_return_server:
-                   print("Server Error: [{}] {}".format(check_return_server[0], check_return_server[1]))
-                   return False
+                    print("Server Error: [{}] {}".format(
+                        check_return_server[0], check_return_server[1]))
+                    return False
 
                 self.accessToken = str(parseJson["accesstoken"])
                 self.uID = int(parseJson["uid"].encode("UTF-8"))
@@ -772,15 +869,19 @@ Waiting for user input : """)
 
                 # Create First request.
                 try:
-                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
+                    result = self.request.get(self.generateURL(
+                        self.uID, php, **kwargs), timeout=5)
                 except requests.exceptions.ConnectTimeout:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint(
+                        "ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ReadTimeout:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint(
+                        "ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ConnectionError:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
+                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(
+                        php, url_login.status_code))
 
                 if kwargs["debug"] is True:
                     logging.info(result.json())
@@ -788,34 +889,40 @@ Waiting for user input : """)
             elif self.uID is not None or self.accessToken is not None:
                 #request = requests.Session()
                 if not self.request:
-                  self.request = requests.Session()
+                    self.request = requests.Session()
 
                 self.request.headers.update({'User-agent': self.user_agent})
 
                 if self.sync_mobile is True:
                     if self.login is "0":
                         self.login = "1"
-                        self.request.get(self.generateURL(self.uID, 'update.php', accesstoken=self.accessToken, lang="fr", lastread="0"), timeout=3)
+                        self.request.get(self.generateURL(
+                            self.uID, 'update.php', accesstoken=self.accessToken, lang="fr", lastread="0"), timeout=3)
 
                 # return just request don't login before.
                 try:
-                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
+                    result = self.request.get(self.generateURL(
+                        self.uID, php, **kwargs), timeout=5)
 
                 except requests.exceptions.ConnectTimeout:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint(
+                        "ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ReadTimeout:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
+                    self.viewsPrint(
+                        "ErrorRequest", "Request Timeout... TimeOut connection {}".format(php))
 
                 except requests.exceptions.ConnectionError:
-                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(php, url_login.status_code))
+                    self.viewsPrint("ErrorRequest", "Request Timeout... Connection Error '{}' with code: [{}]".format(
+                        php, url_login.status_code))
 
                 result.encoding = 'UTF-8'
                 try:
                     parseJson = result.json()
                 except:
                     time.sleep(random.uniform(0.5, 1.5))
-                    result = self.request.get(self.generateURL(self.uID, php, **kwargs), timeout=5)
+                    result = self.request.get(self.generateURL(
+                        self.uID, php, **kwargs), timeout=5)
                     result.encoding = 'UTF-8'
                     parseJson = result.json()
 
